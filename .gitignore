@@ -1,0 +1,14 @@
+node_modules/
+*.log
+.vscode/
+
+.nyc
+coverage/
+
+/packages/*/*/
+!/packages/*/src/
+!/packages/*/test/
+/packages/**/*.js
+/packages/**/*.d.ts
+!/packages/*/src/**/*.js
+!/packages/*/src/**/*.d.ts

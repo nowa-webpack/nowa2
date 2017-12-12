@@ -1,0 +1,6 @@
+{
+  "lerna": "2.5.1",
+  "packages": ["packages/*"],
+  "version": "independent",
+  "npmClientArgs": ["--registry=https://registry.npm.taobao.org"]
+}
