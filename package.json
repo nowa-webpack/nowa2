@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "the @nowa monorepo",
   "scripts": {
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "coverage": "lerna run coverage"
   },
   "repository": {
     "type": "git",
