@@ -4,7 +4,7 @@ import 'mocha'; // tslint:disable-line
 import { Module } from '../../../src/lib/core/module';
 import { Runnable } from '../../../src/lib/core/runnable';
 
-class AsyncModule extends Module.Async<{}> {
+class AsyncModule extends Module.Async {
   public async init() {
     return;
   }
@@ -13,7 +13,7 @@ class AsyncModule extends Module.Async<{}> {
   }
 }
 
-class CallbackModule extends Module.Callback<{}> {
+class CallbackModule extends Module.Callback {
   public async init() {
     return;
   }

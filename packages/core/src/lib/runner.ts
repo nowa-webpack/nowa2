@@ -16,7 +16,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
   public rawSolution: Solution.User;
   public parsedSolution: Solution.Parsed;
   public info: Info;
-  public modules: Array<Module.Type<{}>>;
+  public modules: Module.Type[];
   public moduleQueue: ModuleQueue;
   public options: object;
 

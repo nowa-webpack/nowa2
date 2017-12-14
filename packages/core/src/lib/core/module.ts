@@ -7,24 +7,25 @@ export namespace Module {
     init(): Promise<void>;
   }
 
-  export interface IRuntime {
+  export interface IRuntime<ModuleOption> {
     info: Info;
     commandOptions: object; // TODO
-    moduleOptions: object; // TODO
+    moduleOptions: ModuleOption;
   }
-  export abstract class Async<HookGroup extends Hookable.IHookGroup> extends Runnable.Async<HookGroup> implements IBase {
-    constructor(public $name: string, public $runtime: IRuntime) {
+
+  export abstract class Async<ModuleOption = {}, HookGroup extends Hookable.IHookGroup = {}> extends Runnable.Async<HookGroup> implements IBase {
+    constructor(public $name: string, public $runtime: IRuntime<ModuleOption>) {
       super();
     }
     public abstract async init(): Promise<void>;
   }
 
-  export abstract class Callback<HookGroup extends Hookable.IHookGroup> extends Runnable.Callback<HookGroup> implements IBase {
-    constructor(public $name: string, public $runtime: IRuntime) {
+  export abstract class Callback<ModuleOption = {}, HookGroup extends Hookable.IHookGroup = {}> extends Runnable.Callback<HookGroup> implements IBase {
+    constructor(public $name: string, public $runtime: IRuntime<ModuleOption>) {
       super();
     }
     public abstract async init(): Promise<void>;
   }
 
-  export type Type<HookGroup extends Hookable.IHookGroup> = Async<HookGroup> | Callback<HookGroup>;
+  export type Type<HookGroup extends Hookable.IHookGroup = {}> = Async<HookGroup> | Callback<HookGroup>;
 }

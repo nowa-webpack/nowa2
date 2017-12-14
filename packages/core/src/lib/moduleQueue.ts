@@ -7,7 +7,7 @@ const debug = debugLog('ModuleQueue');
 
 export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   public runtime: ModuleQueue.IRuntime;
-  constructor(public modules: Array<Module.Type<any>>) {
+  constructor(public modules: Module.Type[]) {
     super();
     debug(`construct with ${modules.length} modules`);
     this.runtime = {
@@ -45,7 +45,7 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
     await this.$applyHook('run-end');
     this.runtime.done && this.runtime.done();
   }
-  private async _initModule(module: Module.Type<any>) {
+  private async _initModule(module: Module.Type) {
     try {
       await module.init();
     } catch (error) {
@@ -53,7 +53,7 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
     }
   }
 
-  private async _runModule(module: Module.Type<any>, loopID: number) {
+  private async _runModule(module: Module.Type, loopID: number) {
     if (!this._checkLoopIsValid(loopID)) {
       debug(`loop ${loopID} is outDated and skipped, currentValidLoop ${this.runtime.validLoopID}`);
       return;
@@ -88,7 +88,7 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
     }
   }
 
-  private async _runNewLoop(module: Module.Callback<any>, error?: Error) {
+  private async _runNewLoop(module: Module.Callback, error?: Error) {
     if (error) {
       debug(`${module.$name} try to create a new loop but found error`, error);
       this._handleRunError(error);
