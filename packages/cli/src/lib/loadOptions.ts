@@ -6,6 +6,10 @@ export class LoadOptionsPlugin {
   public apply(runner: Runner) {
     runner.$register('load-options', async ({ commands, config, solution, rawSolution }) => {
       const yargs = this.options.yargsInstance;
+      yargs
+        .version(false)
+        .help('help')
+        .alias('h', 'help');
       const [optionDescriptions, , description] = solution;
       const [configDefaults] = config;
       const { help } = rawSolution;
