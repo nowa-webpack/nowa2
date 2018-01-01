@@ -2,5 +2,12 @@
   "lerna": "2.5.1",
   "packages": ["packages/*"],
   "version": "independent",
-  "npmClientArgs": ["--registry=https://registry.npm.taobao.org"]
+  "npmClientArgs": ["--registry=https://registry.npm.taobao.org"],
+  "command": {
+    "publish": {
+      "message": "chore(release): publish",
+      "conventionalCommits": true,
+      "independent": true
+    }
+  }
 }

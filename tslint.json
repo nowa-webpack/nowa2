@@ -3,6 +3,7 @@
   "rules": {
     "interface-over-type-literal": false,
     "max-classes-per-file": false,
+    "no-console": false,
     "no-empty-interface": false,
     "no-namespace": false,
     "no-shadowed-variable": false,
