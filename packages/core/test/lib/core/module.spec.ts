@@ -5,6 +5,7 @@ import { Module } from '../../../src/lib/core/module';
 import { Runnable } from '../../../src/lib/core/runnable';
 
 class AsyncModule extends Module.Async {
+  public $name = 'async module';
   public async init() {
     return;
   }
@@ -14,6 +15,7 @@ class AsyncModule extends Module.Async {
 }
 
 class CallbackModule extends Module.Callback {
+  public $name = 'callback module';
   public async init() {
     return;
   }
@@ -26,11 +28,7 @@ describe('Module', () => {
   describe('Async', () => {
     let instance: AsyncModule;
     beforeEach(() => {
-      instance = new AsyncModule('async module', {
-        commandOptions: {},
-        info: { command: 'default', subCommand: 'default', context: __dirname, nodeModules: __dirname + '/node_modules' },
-        moduleOptions: {},
-      });
+      instance = new AsyncModule({ context: process.cwd(), commands: [], options: [], moduleOptions: {} });
     });
 
     it('correctly extends Runnable.Async', () => {
@@ -47,11 +45,7 @@ describe('Module', () => {
   describe('Callback', () => {
     let instance: CallbackModule;
     beforeEach(() => {
-      instance = new CallbackModule('callback module', {
-        commandOptions: {},
-        info: { command: 'default', subCommand: 'default', context: __dirname, nodeModules: __dirname + '/node_modules' },
-        moduleOptions: {},
-      });
+      instance = new CallbackModule({ context: process.cwd(), commands: [], options: [], moduleOptions: {} });
     });
 
     it('correctly extends Runnable.Async', () => {

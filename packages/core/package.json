@@ -1,6 +1,6 @@
 {
   "name": "@nowa/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "the nowa core",
   "scripts": {
     "clean": "rm -rf ./lib & rm -f ./index.*",
@@ -8,18 +8,31 @@
     "test": "mocha --opts ../../.mocha.opts --require espower-typescript/guess",
     "coverage": "nyc mocha --opts ../../.mocha.opts"
   },
-  "types": "./",
   "author": {
     "name": "Tommy Troy Lin",
     "email": "tommytroylin@gmail.com",
     "url": "https://github.com/tommytroylin"
   },
+  "homepage": "https://github.com/nowa-webpack/nowa2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nowa-webpack/nowa2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nowa-webpack/nowa2/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "debug": "^3.1.0",
+    "fs-extra": "^5.0.0",
     "tslib": "^1.8.1"
   },
   "devDependencies": {
-    "@types/debug": "0.0.30"
-  }
+    "@types/debug": "0.0.30",
+    "@types/fs-extra": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./"
 }

@@ -1,4 +1,6 @@
 import * as assert from 'assert';
+import { readdirSync } from 'fs';
+import { resolve } from 'path';
 import 'mocha'; // tslint:disable-line
 
 import { createDefaultRunner, createRunner, Runner } from '../src';
@@ -28,12 +30,9 @@ describe('Index', () => {
     assert(runner instanceof Runner);
   });
 
-  it('createDefaultRunner applies plugins', async () => {
-    const hookCount = 15; // number of hook in plugin
-    let runner = await createDefaultRunner([]);
+  it('createDefaultRunner applies all plugins', async () => {
+    const hookCount = readdirSync(resolve(__dirname, '../src/lib/plugins')).length;
+    const runner = await createDefaultRunner([]);
     assert(Object.keys(runner.$hooks).length === hookCount);
-    runner = await createDefaultRunner([new TestPlugin()]);
-    assert(Object.keys(runner.$hooks).length === hookCount + 1);
-    assert(runner.$hooks['init-start']!.length === 2);
   });
 });

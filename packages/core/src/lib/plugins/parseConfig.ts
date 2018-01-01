@@ -1,21 +1,15 @@
-import { Runner } from '../runner';
+import * as debugLog from 'debug';
 
-export namespace ParseConfigPlugin {
-  export interface IOptions {}
-}
+import { Runner } from '../runner';
+import { parser } from '../utils';
+
+const debug = debugLog('ParseConfigPlugin');
 
 export class ParseConfigPlugin {
-  constructor(public options: ParseConfigPlugin.IOptions = {}) {}
   public apply(runner: Runner) {
-    runner.$register('parse-config', async () => {
-      const result: typeof runner.parsedConfig = {
-        config: { solution: '' },
-        nowa: {
-          plugins: [],
-        },
-        ...runner.rawConfig,
-      } as any; // TODO remove casting and actually parse
-      return result;
+    runner.$register('parse-config', async ({ config, commands }) => {
+      const parseResult = parser('config.config', commands, debug, config.config);
+      return (parseResult && parseResult.result) || [{}];
     });
   }
 }

@@ -1,22 +1,27 @@
-import { Runner } from '../runner';
+import * as debugLog from 'debug';
 
-export namespace ParseSolutionPlugin {
-  export interface IOptions {}
-}
+import { Runner } from '../runner';
+import { parser } from '../utils';
+
+const debug = debugLog('ParseSolutionPlugin');
 
 export class ParseSolutionPlugin {
-  constructor(public options: ParseSolutionPlugin.IOptions = {}) {}
   public apply(runner: Runner) {
-    runner.$register('parse-solution', async () => {
-      const result: typeof runner.parsedSolution = {
-        commandDescriptors: {},
-        commands: {},
-        nowa: {
-          plugins: [],
-        },
-        ...runner.rawSolution,
-      } as any; // TODO remove casting and actually parse
-      return result;
+    runner.$register('parse-solution', async ({ config, commands, solution }) => {
+      if (commands.length === 0) {
+        return { actualCommands: [], result: [{}, [], undefined] as [{}, any[], undefined] };
+      }
+      const configResult = parser('config.commands', commands, debug, config.commands);
+      if (configResult) {
+        debug('using config.commands');
+        return configResult;
+      }
+      const solutionResult = parser('solution.commands', commands, debug, solution.commands);
+      if (solutionResult) {
+        debug('using solution.commands');
+        return solutionResult;
+      }
+      throw new Error(`neither of config / solution has described commands.${commands.join('.')}`);
     });
   }
 }

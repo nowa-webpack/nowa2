@@ -16,5 +16,5 @@ export namespace Runnable {
     public abstract async run(): Promise<void>;
   }
 
-  export type Type<HookGroup extends Hookable.IHookGroup> = Callback<HookGroup> | Async<HookGroup>;
+  export type InstanceType<HookGroup extends Hookable.IHookGroup> = Callback<HookGroup> | Async<HookGroup>;
 }

@@ -7,7 +7,7 @@ const debug = debugLog('ModuleQueue');
 
 export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   public runtime: ModuleQueue.IRuntime;
-  constructor(public modules: Module.Type[]) {
+  constructor(public modules: Module.InstanceType[]) {
     super();
     debug(`construct with ${modules.length} modules`);
     this.runtime = {
@@ -45,7 +45,7 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
     await this.$applyHook('run-end');
     this.runtime.done && this.runtime.done();
   }
-  private async _initModule(module: Module.Type) {
+  private async _initModule(module: Module.InstanceType) {
     try {
       await module.init();
     } catch (error) {
@@ -53,7 +53,7 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
     }
   }
 
-  private async _runModule(module: Module.Type, loopID: number) {
+  private async _runModule(module: Module.InstanceType, loopID: number) {
     if (!this._checkLoopIsValid(loopID)) {
       debug(`loop ${loopID} is outDated and skipped, currentValidLoop ${this.runtime.validLoopID}`);
       return;
@@ -68,13 +68,13 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
         }
       }
     } else {
-      await new Promise((resolve, reject) => {
+      await new Promise(resolve => {
         let isCalled = false;
         const done = async (error?: Error) => {
-          this._handleRunError(error);
+          error && (await this._handleRunError(error));
           if (!isCalled) {
             isCalled = true;
-            (await this._handleRunError(error)) ? resolve() : reject(error);
+            resolve();
           } else {
             this._runNewLoop(module, error);
           }
@@ -91,16 +91,16 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   private async _runNewLoop(module: Module.Callback, error?: Error) {
     if (error) {
       debug(`${module.$name} try to create a new loop but found error`, error);
-      this._handleRunError(error);
+      await this._handleRunError(error);
       return;
     }
     const loopID = (this.runtime.validLoopID += 1);
     const currentModuleIndex = this.runtime.loopModules.get(module);
     if (currentModuleIndex === undefined) {
-      this._handleRunError(new Error(`can not locale which module to start`));
+      await this._handleRunError(new Error(`can not locale which module to start`));
       return;
     }
-    debug(`continue on module`, this.modules[currentModuleIndex + 1]);
+    this.modules[currentModuleIndex + 1] && debug(`continue on module`, this.modules[currentModuleIndex + 1].$name);
     for (const module of this.modules.slice(currentModuleIndex + 1)) {
       await this._runModule(module, loopID);
     }
@@ -112,12 +112,12 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   private _checkLoopIsValid(loopID: number) {
     return this.runtime.validLoopID === loopID;
   }
-  private _handleInitError(error: any) {
+  private async _handleInitError(error: any) {
     debug('apply init-error because of', error);
     this.$applyHook('init-error', { error });
   }
 
-  private _handleRunError(error: any) {
+  private async _handleRunError(error: any) {
     debug('apply run-error because of', error);
     this.$applyHook('run-error', { error });
   }
