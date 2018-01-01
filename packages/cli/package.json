@@ -1,0 +1,45 @@
+{
+  "name": "@nowa/cli",
+  "version": "0.2.0",
+  "description": "The nowa command line tool",
+  "scripts": {
+    "clean": "rm -rf ./lib & rm -rf ./bin & rm -f ./index.*",
+    "build": "npm run clean && tsc -p tsconfig.build.json"
+  },
+  "bin": {
+    "nowa2": "./bin/nowa.js"
+  },
+  "typings": "./",
+  "author": {
+    "name": "Tommy Troy Lin",
+    "email": "tommytroylin@gmail.com",
+    "url": "https://github.com/tommytroylin"
+  },
+  "homepage": "https://github.com/nowa-webpack/nowa2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nowa-webpack/nowa2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nowa-webpack/nowa2/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^3.1.0",
+    "yargs": "^10.0.3",
+    "yargs-parser": "^8.1.0",
+    "tslib": "^1.8.1"
+  },
+  "devDependencies": {
+    "@nowa/core": "^0.2.0",
+    "@types/debug": "0.0.30",
+    "@types/node": "^8.0.56",
+    "@types/yargs": "^10.0.0"
+  },
+  "peerDependencies": {
+    "@nowa/core": "^0.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
