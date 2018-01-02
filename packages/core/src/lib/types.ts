@@ -8,7 +8,6 @@ export interface IConfig {
   nowa?: {
     plugins?: Array<string | [string, any]>;
   };
-
   solution: string | object;
 }
 
@@ -19,7 +18,7 @@ export interface IConfigConfigRegistry {
 export type IConfigConfigValues = [{ [optionName: string]: any }];
 
 export interface ISolution {
-  commands?: ISolutionCommandRegistry;
+  commands: ISolutionCommandRegistry;
   help?: {
     [commandName: string]: string;
   };
