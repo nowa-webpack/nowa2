@@ -2,27 +2,13 @@
   "name": "nowa",
   "version": "1.0.0",
   "description": "the @nowa monorepo",
+  "private": true,
   "scripts": {
     "precommit": "lint-staged",
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nowa-webpack/nowa.git"
-  },
-  "keywords": ["nowa", "bundle", "bundler"],
-  "author": {
-    "name": "Tommy Troy Lin",
-    "email": "tommytroylin@gmail.com",
-    "url": "https://github.com/tommytroylin"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nowa-webpack/nowa/issues"
-  },
-  "homepage": "https://github.com/nowa-webpack/nowa",
   "devDependencies": {
     "@types/mocha": "^2.2.45",
     "@types/node": "^8.5.2",
