@@ -1,3 +1,7 @@
+import { constants } from 'fs';
+
+import { access } from 'fs-extra';
+
 import { IConfigConfigRegistry, IConfigConfigValues, ISolutionCommandDescription, ISolutionCommandRegistry } from './types';
 
 export function parser(
@@ -72,4 +76,12 @@ export const deleteUndefined = <T extends object>(obj: T, recursive = false): T 
     }
   });
   return obj;
+};
+
+export const requireFile = async (filePath: string, isJSON: boolean = false) => {
+  await access(filePath, constants.R_OK);
+  if (isJSON || filePath.endsWith('.json')) {
+    return handleESModule(require(filePath));
+  }
+  return require(filePath);
 };
