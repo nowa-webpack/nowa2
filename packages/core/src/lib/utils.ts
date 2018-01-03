@@ -55,8 +55,8 @@ export function parser(
   return undefined;
 }
 
-export const handleESModule = <T extends any>(moduleExport: T) => {
-  if (moduleExport.default) {
+export const handleESModuleDefault = <T extends any>(moduleExport: T): T => {
+  if (moduleExport.__esModule) {
     return (moduleExport.default as any) as T;
   } else {
     return moduleExport;

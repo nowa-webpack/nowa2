@@ -4,7 +4,7 @@ import * as debugLog from 'debug';
 
 import { Module } from '../core/module';
 import { Runner } from '../runner';
-import { handleESModule } from '../utils';
+import { handleESModuleDefault } from '../utils';
 
 const debug = debugLog('LoadModulesPlugin');
 
@@ -44,7 +44,7 @@ export class LoadModulesPlugin {
       for (const prefix of prefixes) {
         const modulePath = `${prefix}${pathOrModuleName}`;
         try {
-          return handleESModule(require(modulePath));
+          return handleESModuleDefault(require(modulePath));
         } catch (e) {
           debug(`Error when resolving module from ${modulePath}`);
           debug(e);
@@ -52,7 +52,7 @@ export class LoadModulesPlugin {
       }
     } else {
       const modulePath = resolve(context, pathOrModuleName);
-      return handleESModule(require(modulePath));
+      return handleESModuleDefault(require(modulePath));
     }
     throw new Error(`Can not load module ${pathOrModuleName}`);
   }

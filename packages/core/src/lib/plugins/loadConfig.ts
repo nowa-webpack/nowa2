@@ -5,7 +5,7 @@ import * as debugLog from 'debug';
 import { access } from 'fs-extra';
 
 import { Runner } from '../runner';
-import { handleESModule } from '../utils';
+import { handleESModuleDefault } from '../utils';
 
 const debug = debugLog('LoadConfigPlugin');
 
@@ -31,7 +31,7 @@ export class LoadConfigPlugin {
         }
         debug(`found config ${filePath}`);
         try {
-          return handleESModule(require(filePath));
+          return handleESModuleDefault(require(filePath));
         } catch (e) {
           debug(`Error when resolving config from ${filePath}`);
           debug(e);

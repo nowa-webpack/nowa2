@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import * as debugLog from 'debug';
 
 import { Runner } from '../runner';
-import { handleESModule } from '../utils';
+import { handleESModuleDefault } from '../utils';
 
 const debug = debugLog('LoadSolutionPlugin');
 
@@ -32,7 +32,7 @@ export class LoadSolutionPlugin {
       debug(`got solution path ${solution} and it ${isModule ? 'is' : `isn't`} a node module`);
       const solutionPath = isModule ? solution : resolve(context, solution);
       try {
-        return handleESModule(require(solutionPath));
+        return handleESModuleDefault(require(solutionPath));
       } catch (e) {
         console.error(e);
         throw new Error(`Error when resolving solution from ${solutionPath}`);
