@@ -78,10 +78,11 @@ export const deleteUndefined = <T extends object>(obj: T, recursive = false): T 
   return obj;
 };
 
-export const requireFile = async (filePath: string, isJSON: boolean = false) => {
-  await access(filePath, constants.R_OK);
-  if (isJSON || filePath.endsWith('.json')) {
-    return handleESModule(require(filePath));
+export const requireFile = async (filePath: string) => {
+  try {
+    await access(filePath, constants.R_OK);
+  } catch {
+    return undefined;
   }
-  return require(filePath);
+  return handleESModuleDefault(require(filePath));
 };
