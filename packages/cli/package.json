@@ -1,6 +1,6 @@
 {
   "name": "@nowa/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The nowa command line tool",
   "scripts": {
     "clean": "rm -rf ./lib & rm -rf ./bin & rm -f ./index.*",
@@ -32,13 +32,13 @@
     "yargs-parser": "^8.1.0"
   },
   "devDependencies": {
-    "@nowa/core": "^0.2.0",
+    "@nowa/core": "^0.3.0",
     "@types/debug": "0.0.30",
     "@types/node": "^8.0.56",
     "@types/yargs": "^10.0.0"
   },
   "peerDependencies": {
-    "@nowa/core": "^0.2.0"
+    "@nowa/core": "^0.3.0"
   },
   "publishConfig": {
     "access": "public"
