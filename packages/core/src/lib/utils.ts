@@ -5,7 +5,7 @@ import { access } from 'fs-extra';
 import { IConfigConfigRegistry, IConfigConfigValues, ISolutionCommandDescription, ISolutionCommandRegistry } from './types';
 
 export function parser(
-  target: 'config.config',
+  target: 'config.config' | string,
   commands: string[],
   debug: (...args: any[]) => void,
   source?: IConfigConfigRegistry,
@@ -17,7 +17,7 @@ export function parser(
   source?: ISolutionCommandRegistry,
 ): { actualCommands: string[]; result: ISolutionCommandDescription } | undefined;
 export function parser(
-  target: 'solution.commands' | 'config.commands' | 'config.config',
+  target: 'solution.commands' | 'config.commands' | 'config.config' | string,
   commands: string[],
   debug: (...args: any[]) => void,
   source?: ISolutionCommandRegistry | IConfigConfigRegistry,
