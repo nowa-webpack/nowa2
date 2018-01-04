@@ -40,7 +40,7 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
     }
     if (typeof overwriteConfig === 'function') {
       console.log(`overwrite webpack from ${overwriteConfigPath}`);
-      this.config = await overwriteConfig(this.config, this.$runtime);
+      this.config = await overwriteConfig(this.config, this.$runtime, Webpack);
     }
     let firstConfig: Webpack.Configuration = this.config as Webpack.Configuration;
     if (Array.isArray(firstConfig)) {
