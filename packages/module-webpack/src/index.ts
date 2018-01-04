@@ -1,4 +1,5 @@
-/* tslint:disable:no-console */
+import { resolve } from 'path';
+
 import { Module, utils } from '@nowa/core';
 import * as isSupportColor from 'supports-color';
 import * as Webpack from 'webpack';
@@ -16,15 +17,30 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
   public config?: Webpack.Configuration | Webpack.Configuration[];
   public firstConfig?: Webpack.Configuration;
   public alreadyRun = false;
+
   public async init() {
     if (this.$runtime.moduleOptions.configFile) {
-      const config = utils.handleESModule(require(this.$runtime.moduleOptions.configFile));
+      const config = utils.handleESModuleDefault(require(this.$runtime.moduleOptions.configFile));
       this.config = await config;
     } else {
       this.config = this.$runtime.moduleOptions.rawConfig;
     }
     if (!this.config) {
       throw new Error(`module webpack needs one of configFile / rawConfig but got ${this.config}`);
+    }
+    if (typeof this.config === 'function') {
+      this.config = (this.config as any)({ context: this.$runtime.context, options: this.$runtime.options });
+    }
+    const overwriteConfigPath = resolve(this.$runtime.context, './webpack.config.js');
+    let overwriteConfig = await utils.requireFile(overwriteConfigPath);
+
+    if (overwriteConfig && typeof overwriteConfig === 'object') {
+      const parserResult = utils.parser('webpack.config', this.$runtime.commands, () => {}, overwriteConfig); // tslint:disable-line:no-empty
+      overwriteConfig = (parserResult && parserResult.result && parserResult.result[0]) || overwriteConfig;
+    }
+    if (typeof overwriteConfig === 'function') {
+      console.log(`overwrite webpack from ${overwriteConfigPath}`);
+      this.config = await overwriteConfig(this.config, this.$runtime);
     }
     let firstConfig: Webpack.Configuration = this.config as Webpack.Configuration;
     if (Array.isArray(firstConfig)) {
@@ -33,6 +49,7 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
     this.firstConfig = firstConfig;
     this.firstConfig.devServer ? await this._initWebpackDevServer() : await this._initWebpack();
   }
+
   public run(done: () => void) {
     if (!this.alreadyRun) {
       if (this.firstConfig!.devServer) {
@@ -61,14 +78,12 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
     const options = this.config!;
     const firstOptions: any = [].concat(options as any)[0];
     const statsPresetToOptions = Stats.presetToOptions;
-
     let outputOptions: any = (options as any).stats;
     if (typeof outputOptions === 'boolean' || typeof outputOptions === 'string') {
       outputOptions = statsPresetToOptions(outputOptions);
     } else if (!outputOptions) {
       outputOptions = {};
     }
-
     outputOptions = Object.create(outputOptions);
     if (Array.isArray(options) && !outputOptions.children) {
       outputOptions.children = options.map(o => o.stats);
@@ -76,7 +91,6 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
     if (typeof outputOptions.context === 'undefined') {
       outputOptions.context = firstOptions.context;
     }
-
     if (typeof outputOptions.colors === 'undefined') {
       outputOptions.colors = true;
     }
@@ -87,14 +101,11 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
       if (typeof outputOptions.cachedAssets === 'undefined') {
         outputOptions.cachedAssets = false;
       }
-
       if (!outputOptions.exclude) {
         outputOptions.exclude = ['node_modules', 'bower_components', 'components'];
       }
     }
-
     Error.stackTraceLimit = 30;
-
     try {
       this.compiler = Webpack(options as Webpack.Configuration);
     } catch (err) {
@@ -140,14 +151,12 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
     // from webpack-dev-server
     // https://github.com/webpack/webpack-dev-server/blob/master/bin/webpack-dev-server.js
     // 2.9.7
-
     const fs = require('fs');
     const net = require('net');
     const open = require('opn'); // tslint:disable-line
     const portfinder = require('portfinder'); // tslint:disable-line
     const addDevServerEntrypoints = require('webpack-dev-server/lib/util/addDevServerEntrypoints'); // tslint:disable-line
     const createDomain = require('webpack-dev-server/lib/util/createDomain'); // tslint:disable-line
-
     function colorInfo(useColor: boolean, msg: string) {
       if (useColor) {
         // Make text blue and bold, so it *pops*
@@ -155,7 +164,6 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
       }
       return msg;
     }
-
     function colorError(useColor: boolean, msg: string) {
       if (useColor) {
         // Make text red and bold, so it *pops*
@@ -163,43 +171,33 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
       }
       return msg;
     }
-
     function reportReadiness(uri: string, options: any) {
       const useColor = isSupportColor;
       const contentBase = Array.isArray(options.contentBase) ? options.contentBase.join(', ') : options.contentBase;
-
       if (!options.quiet) {
         let startSentence = `Project is running at ${colorInfo(useColor, uri)}`;
         if (options.socket) {
           startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
         }
-
         console.log((options.progress ? '\n' : '') + startSentence);
-
         console.log(`webpack output is served from ${colorInfo(useColor, options.publicPath)}`);
-
         if (contentBase) {
           console.log(`Content not from webpack is served from ${colorInfo(useColor, contentBase)}`);
         }
-
         if (options.historyApiFallback) {
           console.log(`404s will fallback to ${colorInfo(useColor, options.historyApiFallback.index || '/index.html')}`);
         }
-
         if (options.bonjour) {
           console.log('Broadcasting "http" with subtype of "webpack" via ZeroConf DNS (Bonjour)');
         }
       }
-
       if (options.open) {
         let openOptions = {};
         let openMessage = 'Unable to open browser';
-
         if (typeof options.open === 'string') {
           openOptions = { app: options.open };
           openMessage += `: ${options.open}`;
         }
-
         open(uri + (options.openPage || ''), openOptions).catch(() => {
           console.log(`${openMessage}. If you are running in a headless environment, please do not use the open flag.`);
         });
@@ -221,10 +219,8 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
       });
     }
     const DEFAULT_PORT = 8080;
-
     const webpackOptions = this.config!;
     const options = this.firstConfig!.devServer || {};
-
     if (!options.publicPath) {
       // eslint-disable-next-line
       options.publicPath = (this.firstConfig!.output && this.firstConfig!.output!.publicPath) || '';
@@ -232,30 +228,24 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
         options.publicPath = `/${options.publicPath}`;
       }
     }
-
     if (!options.filename) {
       options.filename = this.firstConfig!.output && this.firstConfig!.output!.filename;
     }
-
     if (!options.watchOptions) {
       options.watchOptions = this.firstConfig!.watchOptions;
     }
-
     if (!options.stats) {
       options.stats = {
         cached: false,
         cachedAssets: false,
       };
     }
-
     if (typeof options.stats === 'object' && typeof options.stats.colors === 'undefined') {
       options.stats = { ...options.stats, colors: isSupportColor };
     }
-
     if (options.open && !options.openPage) {
       options.openPage = '';
     }
-
     if (!options.port) {
       await new Promise(resolve => {
         portfinder.basePort = DEFAULT_PORT;
@@ -268,34 +258,26 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
         });
       });
     }
-
     // defaults from yargs
     if (options.inline == null) {
       options.inline = true;
     }
-
     if (options.host == null) {
       options.host = 'localhost';
     }
-
     this.startDevServer = async (done: () => void) => {
       addDevServerEntrypoints(webpackOptions, options);
-
       await this._initWebpack();
-
       if (options.progress) {
         this.compiler!.apply(new Webpack.ProgressPlugin());
       }
-
       const donePromise = new Promise(resolve => {
         this.compiler!.plugin('done', () => {
           done();
           resolve();
         });
       });
-
       const suffix = options.inline !== false || options.lazy === true ? '/' : '/webpack-dev-server/';
-
       try {
         this.server = new WebpackDevServer(this.compiler!, options);
       } catch (e) {
@@ -304,7 +286,6 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
         }
         throw e;
       }
-
       ['SIGINT', 'SIGTERM'].forEach(sig => {
         process.on(sig as 'SIGINT' | 'SIGTERM', () => {
           this.server!.close(() => {
@@ -312,7 +293,6 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
           });
         });
       });
-
       if (options.socket) {
         (this.server as any).listeningApp.on('error', (e: any) => {
           if (e.code === 'EADDRINUSE') {
@@ -343,7 +323,6 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
             if (fsError) {
               throw fsError;
             }
-
             const uri = createDomain(options, (this.server as any).listeningApp) + suffix;
             reportReadiness(uri, options);
           });
@@ -356,7 +335,6 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
           if (options.bonjour) {
             broadcastZeroconf(options);
           }
-
           const uri = createDomain(options, (this.server as any).listeningApp) + suffix;
           reportReadiness(uri, options);
         });
