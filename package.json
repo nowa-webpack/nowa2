@@ -5,14 +5,17 @@
   "private": true,
   "scripts": {
     "precommit": "lint-staged",
+    "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage",
-    "publish": "lerna run build && lerna run pulish"
+    "publish": "lerna run build && lerna publish",
+    "link": "lerna exec npm link",
+    "unlink": "lerna exec npm unlink"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.45",
-    "@types/node": "^8.5.2",
+    "@types/node": "^8.5.5",
     "espower-typescript": "^8.1.2",
     "husky": "^0.14.3",
     "lerna": "^2.5.1",
