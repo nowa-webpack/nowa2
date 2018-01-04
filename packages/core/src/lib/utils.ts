@@ -5,7 +5,7 @@ import { access } from 'fs-extra';
 import { IConfigConfigRegistry, IConfigConfigValues, ISolutionCommandDescription, ISolutionCommandRegistry } from './types';
 
 export function parser(
-  target: 'config.config' | string,
+  target: 'config.config',
   commands: string[],
   debug: (...args: any[]) => void,
   source?: IConfigConfigRegistry,
@@ -17,11 +17,23 @@ export function parser(
   source?: ISolutionCommandRegistry,
 ): { actualCommands: string[]; result: ISolutionCommandDescription } | undefined;
 export function parser(
-  target: 'solution.commands' | 'config.commands' | 'config.config' | string,
+  target: 'solution.commands' | 'config.commands' | 'config.config',
   commands: string[],
   debug: (...args: any[]) => void,
   source?: ISolutionCommandRegistry | IConfigConfigRegistry,
-): { actualCommands: string[]; result: IConfigConfigValues | ISolutionCommandDescription } | undefined {
+): { actualCommands: string[]; result: IConfigConfigValues | ISolutionCommandDescription } | undefined;
+export function parser(
+  target: string,
+  commands: string[],
+  debug: (...args: any[]) => void,
+  source?: any,
+): { actualCommands: string[]; result: any } | undefined;
+export function parser(
+  target: string,
+  commands: string[],
+  debug: (...args: any[]) => void,
+  source?: any,
+): { actualCommands: string[]; result: any } | undefined {
   if (!source) {
     debug(`${target} is falsy`);
     return undefined;
@@ -38,8 +50,11 @@ export function parser(
       debug(`find ${target} @ ${target}.${currentPath}`);
       return { result: next as IConfigConfigValues | ISolutionCommandDescription, actualCommands: currentCommand };
     }
-    if (next === undefined) {
-      debug(`can not retrieve from ${target}.${currentPath}`);
+    if (next !== undefined) {
+      cursor = next;
+      index += 1;
+      debug(`continue on ${target}.${currentPath}`);
+    } else {
       if (cursor.default) {
         debug(`find and try to fallback to ${target}.${commands.slice(0, index).join('.')}.default`);
         if (Array.isArray(cursor.default)) {
@@ -49,9 +64,7 @@ export function parser(
           return undefined;
         }
       }
-    } else {
-      cursor = next;
-      index += 1;
+      break;
     }
   } while (cursor);
   debug(`can not retrieve from ${target}.${commands.join('.')}`);
