@@ -27,8 +27,10 @@ export function parser(
     return undefined;
   }
   let cursor = source;
-  for (const [index, currentCommandPart] of commands.entries()) {
+  let index = 0;
+  do {
     // commands ['{command1}', '{command2}']
+    const currentCommandPart = commands[index] || 'default';
     const currentCommand = commands.slice(0, index + 1);
     const currentPath = currentCommand.join('.');
     const next = cursor[currentCommandPart];
@@ -49,8 +51,9 @@ export function parser(
       }
     } else {
       cursor = next;
+      index += 1;
     }
-  }
+  } while (cursor);
   debug(`can not retrieve from ${target}.${commands.join('.')}`);
   return undefined;
 }
