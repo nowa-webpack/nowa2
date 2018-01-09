@@ -12,7 +12,7 @@ export interface IConfig {
 }
 
 export interface IConfigConfigRegistry {
-  [commandName: string]: IConfigConfigValues | IConfigConfigRegistry;
+  [commandName: string]: string | IConfigConfigValues | IConfigConfigRegistry;
 }
 
 export type IConfigConfigValues = [{ [optionName: string]: any }];
@@ -36,7 +36,7 @@ export type ISolutionCommandDescription = [
   /* description */ string | undefined
 ];
 export interface ISolutionCommandRegistry {
-  [commandName: string]: ISolutionCommandDescription | ISolutionCommandRegistry;
+  [commandName: string]: string | ISolutionCommandDescription | ISolutionCommandRegistry;
 }
 
 export interface IBaseOptionDescription {

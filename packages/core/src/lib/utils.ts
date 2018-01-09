@@ -45,12 +45,14 @@ export function parser(
     const currentCommandPart = commands[index] || 'default';
     const currentCommand = commands.slice(0, index + 1);
     const currentPath = currentCommand.join('.');
-    const next = cursor[currentCommandPart];
+    let next = cursor[currentCommandPart];
+    if (typeof next === 'string') {
+      next = cursor[next];
+    }
     if (Array.isArray(next)) {
       debug(`find ${target} @ ${target}.${currentPath}`);
       return { result: next as IConfigConfigValues | ISolutionCommandDescription, actualCommands: currentCommand };
-    }
-    if (next !== undefined) {
+    } else if (next !== undefined) {
       cursor = next;
       index += 1;
       debug(`continue on ${target}.${currentPath}`);
