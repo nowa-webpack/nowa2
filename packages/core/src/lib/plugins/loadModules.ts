@@ -19,19 +19,27 @@ export class LoadModulesPlugin {
       const moduleArray = solution[1];
       const result: Module.InstanceType[] = [];
       for (const module of moduleArray) {
-        let instance;
+        let instance: any;
         if (typeof module === 'string') {
           const ClassConstructor = this._loadModule(module, context, prefixes);
-          instance = new ClassConstructor({ context, commands, options, moduleOptions: {} });
+          if (this._checkIsNowaModule(ClassConstructor, module)) {
+            instance = new ClassConstructor({ context, commands, options, moduleOptions: {} });
+          }
         } else {
           const ClassConstructor = this._loadModule(module[0], context, prefixes);
           let moduleOptions = module[1];
           if (typeof moduleOptions === 'function') {
             moduleOptions = moduleOptions({ context, options });
           }
-          instance = new ClassConstructor({ context, commands, options, moduleOptions });
+          if (this._checkIsNowaModule(ClassConstructor, module[0])) {
+            instance = new ClassConstructor({ context, commands, options, moduleOptions });
+          }
         }
-        result.push((instance as any) as Module.InstanceType);
+        if (instance) {
+          result.push(instance as Module.InstanceType);
+        } else {
+          debug(`ignore ${Array.isArray(module) ? module[0] : module} since its instance is falsy`);
+        }
       }
       return result;
     });
@@ -55,6 +63,15 @@ export class LoadModulesPlugin {
       return handleESModuleDefault(require(modulePath));
     }
     throw new Error(`Can not load module ${pathOrModuleName}`);
+  }
+  private _checkIsNowaModule(module: Module.IConstructor, path: string): boolean {
+    if (module.prototype.$type && module.$hooks && module.$register) {
+      debug(`${path} is a nowa module`);
+      return true;
+    } else {
+      debug(`${path} is not a nowa module`);
+      return false;
+    }
   }
 }
 
