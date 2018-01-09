@@ -8,3 +8,8 @@ declare module 'import-local' {
   const importLocal: (filename: string) => boolean;
   export = importLocal;
 }
+
+declare module 'is-elevated' {
+  const isElevated: () => Promise<boolean>;
+  export = isElevated;
+}

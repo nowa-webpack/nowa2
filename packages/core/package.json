@@ -31,8 +31,11 @@
     "@types/debug": "0.0.30",
     "@types/fs-extra": "^5.0.0"
   },
+  "types": "./",
   "publishConfig": {
     "access": "public"
   },
-  "types": "./"
+  "engines": {
+    "node": ">=6.5"
+  }
 }

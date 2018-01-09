@@ -36,8 +36,11 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
+  "types": "./",
   "publishConfig": {
     "access": "public"
   },
-  "types": "./"
+  "engines": {
+    "node": ">=6.5"
+  }
 }

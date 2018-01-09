@@ -6,10 +6,6 @@
     "clean": "rm -rf ./lib & rm -rf ./bin & rm -f ./index.*",
     "build": "npm run clean && tsc -p tsconfig.build.json"
   },
-  "bin": {
-    "nowa2": "./bin/nowa.js"
-  },
-  "typings": "./",
   "author": {
     "name": "Tommy Troy Lin",
     "email": "tommytroylin@gmail.com",
@@ -25,8 +21,10 @@
   },
   "license": "MIT",
   "dependencies": {
+    "chalk": "^2.3.0",
     "debug": "^3.1.0",
     "import-local": "^1.0.0",
+    "is-elevated": "^2.0.1",
     "semver": "^5.4.1",
     "tslib": "^1.8.1",
     "yargs": "^10.0.3",
@@ -42,7 +40,14 @@
   "peerDependencies": {
     "@nowa/core": "^0.3.0"
   },
+  "bin": {
+    "nowa2": "./bin/nowa.js"
+  },
+  "types": "./",
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=6.5"
   }
 }
