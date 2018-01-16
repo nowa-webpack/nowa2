@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.3.0...@nowa/cli@0.3.1) (2018-01-16)
+
+
+### Bug Fixes
+
+* env check failure on node 6.11.x ([044790e](https://github.com/nowa-webpack/nowa2/commit/044790e))
+
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.2.0...@nowa/cli@0.3.0) (2018-01-04)
 
