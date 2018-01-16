@@ -3,18 +3,20 @@ import * as debugLog from 'debug';
 import { Module } from './core/module';
 import { Runnable } from './core/runnable';
 import { ModuleQueue } from './moduleQueue';
-import { IConfig, IConfigConfigValues, IPlugin, ISolution, ISolutionCommandDescription } from './types';
+import { IConfig, IConfigConfigValues, IPlugin, ISolution, ISolutionCommandDescription, IUtils } from './types';
 
 const debug = debugLog('Runner');
 
 export class Runner extends Runnable.Callback<Runner.PluginGroup> {
   public runtime: Runner.IRuntime = { parsed: {}, raw: {} } as any;
+  constructor(public $createUtils: Runner.UtilsCreator) {
+    super();
+  }
   public async init(): Promise<void> {
     try {
       debug('apply init-start');
       await this.$applyHook('init-start');
-      // load info/config/solution
-      debug('apply load-info');
+      debug('apply init-context');
       this.runtime.context = await this.$applyHookBail('init-context');
       debug('apply load-config');
       this.runtime.raw.config = await this.$applyHookBail('load-config', { context: this.runtime.context });
@@ -23,7 +25,6 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
         config: this.runtime.raw.config,
         context: this.runtime.context,
       });
-      // load plugins
       debug('apply load-plugins');
       const plugins = await this.$applyHookBail('load-plugins', {
         config: this.runtime.raw.config,
@@ -32,7 +33,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
       });
       debug(`load ${plugins.length} plugin(s) from config and solution`);
       for (const plugin of plugins) {
-        await plugin.apply(this);
+        await plugin.apply(this, this.$createUtils(plugin.name));
       }
       debug('apply load-commands');
       this.runtime.raw.commands = await this.$applyHookBail('load-commands', {
@@ -64,7 +65,11 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
         solution: this.runtime.parsed.solution,
       });
       debug('apply load-modules');
-      this.runtime.modules = await this.$applyHookBail('load-modules', { context: this.runtime.context, ...this.runtime.parsed });
+      this.runtime.modules = await this.$applyHookBail('load-modules', {
+        context: this.runtime.context,
+        createUtils: this.$createUtils,
+        ...this.runtime.parsed,
+      });
       debug(`load ${this.runtime.modules.length} module(s)`);
       debug('create & init moduleQueue');
       this.runtime.moduleQueue = new ModuleQueue(this.runtime.modules);
@@ -77,7 +82,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
       });
       await this.runtime.moduleQueue.init();
       debug('apply init-end');
-      await this.$applyHook('init-end');
+      await this.$applyHook('init-end', this);
     } catch (e) {
       debug(`apply init-error because of ${e}`);
       await this.$applyHook('init-error', { error: e });
@@ -88,14 +93,14 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
     process.on('SIGINT', () => {
       debug('signal SIGINT received');
       debug('apply run-end');
-      this.$applyHook('run-end').then(() => process.exit(1));
+      this.$applyHook('run-end', this).then(() => process.exit(1));
     });
     debug('apply run-start');
-    await this.$applyHook('run-start');
+    await this.$applyHook('run-start', this);
     debug('run modules');
     await this.runtime.moduleQueue.run(() => {
       debug('apply run-end');
-      this.$applyHook('run-end');
+      this.$applyHook('run-end', this);
     });
   }
 }
@@ -118,17 +123,19 @@ export namespace Runner {
         },
       IRuntime['parsed']['options']
     ];
-    'load-modules': [Pick<IRuntime, 'context'> & IRuntime['parsed'], IRuntime['modules']];
+    'load-modules': [Pick<IRuntime, 'context'> & IRuntime['parsed'] & { createUtils: Runner.UtilsCreator }, IRuntime['modules']];
     'init-module-queue': [
       Pick<IRuntime, 'context'> & IRuntime['parsed'] & { modules: IRuntime['modules']; moduleQueue: IRuntime['moduleQueue'] },
       void
     ];
-    'init-end': [undefined, void];
-    'run-start': [undefined, void];
-    'run-end': [undefined, void];
+    'init-end': [Runner, void];
+    'run-start': [Runner, void];
+    'run-end': [Runner, void];
     'init-error': [{ error: any }, void];
     'run-error': [{ error: any }, void];
   };
+
+  export type UtilsCreator = (name?: string) => IUtils;
 
   export interface IRuntime {
     context: string;

@@ -1,7 +1,8 @@
 import { Chalk } from 'chalk';
 
 export interface IPlugin<For> {
-  apply(hookable: For): void | Promise<void>;
+  name?: string;
+  apply(hookable: For, utils: IUtils): void | Promise<void>;
 }
 
 export interface ILogger {

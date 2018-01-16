@@ -15,24 +15,24 @@ export class LoadModulesPlugin {
 
   public apply(runner: Runner) {
     const prefixes = [...(this.options.modulePrefixes || []), ...modulePrefixes];
-    runner.$register('load-modules', async ({ context, commands, options, solution }) => {
+    runner.$register('load-modules', async ({ context, commands, options, solution, createUtils }) => {
       const moduleArray = solution[1];
       const result: Module.InstanceType[] = [];
       for (const module of moduleArray) {
         let instance: any;
         if (typeof module === 'string') {
-          const ClassConstructor = this._loadModule(module, context, prefixes);
+          const ClassConstructor = this._loadModule(module, context, prefixes); // tslint:disable-line:variable-name
           if (this._checkIsNowaModule(ClassConstructor, module)) {
-            instance = new ClassConstructor({ context, commands, options, moduleOptions: {} });
+            instance = new ClassConstructor({ context, commands, options, moduleOptions: {} }, createUtils(ClassConstructor.name));
           }
         } else {
-          const ClassConstructor = this._loadModule(module[0], context, prefixes);
+          const ClassConstructor = this._loadModule(module[0], context, prefixes); // tslint:disable-line:variable-name
           let moduleOptions = module[1];
           if (typeof moduleOptions === 'function') {
             moduleOptions = moduleOptions({ context, options });
           }
           if (this._checkIsNowaModule(ClassConstructor, module[0])) {
-            instance = new ClassConstructor({ context, commands, options, moduleOptions });
+            instance = new ClassConstructor({ context, commands, options, moduleOptions }, createUtils(ClassConstructor.name));
           }
         }
         if (instance) {

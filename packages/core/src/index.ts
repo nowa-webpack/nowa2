@@ -13,15 +13,15 @@ import { ParseConfigPlugin } from './lib/plugins/parseConfig';
 import { ParseSolutionPlugin } from './lib/plugins/parseSolution';
 import { RunErrorPlugin } from './lib/plugins/runError';
 
-export const createRunner = async (plugins: Array<IPlugin<Runner>>) => {
-  const runner = new Runner();
+export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<IPlugin<Runner>>) => {
+  const runner = new Runner(createUtils);
   for (const plugin of plugins) {
-    await plugin.apply(runner);
+    await plugin.apply(runner, createUtils(plugin.name));
   }
   return runner;
 };
 
-export const createDefaultRunner = async (plugins: Array<IPlugin<Runner>>) => {
+export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<IPlugin<Runner>>) => {
   const allPlugins = [
     new InitContextPlugin(),
     new InitErrorPlugin(),
@@ -34,7 +34,7 @@ export const createDefaultRunner = async (plugins: Array<IPlugin<Runner>>) => {
     new RunErrorPlugin(),
     ...plugins,
   ];
-  return createRunner(allPlugins);
+  return createRunner(createUtils, allPlugins);
 };
 
 export { Runner, Module, utils };

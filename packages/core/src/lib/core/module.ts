@@ -1,3 +1,4 @@
+import { IUtils } from '../types';
 import { Hookable } from './hookable';
 import { Runnable } from './runnable';
 
@@ -5,11 +6,12 @@ export namespace Module {
   export interface IBase<ModuleOptions = {}> {
     $name: string;
     $runtime: IRuntime<ModuleOptions>;
+    $utils: IUtils;
     init(): Promise<void>;
   }
 
   export interface IConstructor<ModuleOptions = {}> extends Async {
-    new ($runtime: IRuntime<ModuleOptions>): this;
+    new ($runtime: IRuntime<ModuleOptions>, $utils: IUtils): this;
   }
 
   export interface IRuntime<ModuleOptions = {}> {
@@ -22,7 +24,7 @@ export namespace Module {
   export abstract class Async<ModuleOptions = {}, HookGroup extends Hookable.IHookGroup = {}> extends Runnable.Async<HookGroup>
     implements IBase<ModuleOptions> {
     public abstract $name: string;
-    constructor(public $runtime: IRuntime<ModuleOptions>) {
+    constructor(public $runtime: IRuntime<ModuleOptions>, public $utils: IUtils) {
       super();
     }
     public abstract async init(): Promise<void>;
@@ -31,7 +33,7 @@ export namespace Module {
   export abstract class Callback<ModuleOptions = {}, HookGroup extends Hookable.IHookGroup = {}> extends Runnable.Callback<HookGroup>
     implements IBase<ModuleOptions> {
     public abstract $name: string;
-    constructor(public $runtime: IRuntime<ModuleOptions>) {
+    constructor(public $runtime: IRuntime<ModuleOptions>, public $utils: IUtils) {
       super();
     }
     public abstract async init(): Promise<void>;
