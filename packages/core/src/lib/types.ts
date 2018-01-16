@@ -1,5 +1,33 @@
+import { Chalk } from 'chalk';
+
 export interface IPlugin<For> {
   apply(hookable: For): void | Promise<void>;
+}
+
+export interface ILogger {
+  error: (...args: any[]) => void;
+  warn: (...args: any[]) => void;
+  log: (...args: any[]) => void;
+  info: (...args: any[]) => void;
+  debug: (...args: any[]) => void;
+}
+
+export interface ISpinner {
+  start: (text: string) => this;
+  stop: () => this;
+  succeed: (text?: string) => this;
+  fail: (text?: string) => this;
+  warn: (text?: string) => this;
+  info: (text?: string) => this;
+  clear: () => this;
+  promise(promise: Promise<any>, text?: string): this;
+}
+
+export interface IUtils {
+  chalk: Chalk;
+  logger: ILogger;
+  prompt: (desc: string, options?: Partial<IPromptOptionDescription>) => Promise<string>;
+  spinner: ISpinner;
 }
 
 export interface IConfig {
