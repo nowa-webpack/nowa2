@@ -137,6 +137,8 @@ export namespace Runner {
 
   export type UtilsCreator = (name?: string) => IUtils;
 
+  export type Utils = IUtils;
+
   export interface IRuntime {
     context: string;
     raw: {
