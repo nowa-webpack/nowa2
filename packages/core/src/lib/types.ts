@@ -27,7 +27,7 @@ export interface ISpinner {
 export interface IUtils {
   chalk: Chalk;
   logger: ILogger;
-  prompt: (desc: string, options?: Partial<IPromptOptionDescription>) => Promise<string>;
+  prompt: (desc: string, options?: Partial<IPromptOptionDescription>) => Promise<any>;
   spinner: ISpinner;
 }
 
@@ -82,7 +82,8 @@ export type IOptionDescription =
   | IStringOptionDescription
   | INumberOptionDescription
   | IArrayOptionDescription
-  | IBooleanOptionDescription;
+  | IBooleanOptionDescription
+  | IPromptOptionDescription;
 
 export type IPromptOptionDescription =
   | ITextPromptOptionDescription
