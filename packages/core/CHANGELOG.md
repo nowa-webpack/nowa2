@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.3.0...@nowa/core@0.4.0) (2018-01-18)
+
+
+### Bug Fixes
+
+* **types:** type errors ([dcc040f](https://github.com/nowa-webpack/nowa2/commit/dcc040f))
+
+
+### Features
+
+* **loadModules:** check if module is a nowa module before instantiate it ([7c62b24](https://github.com/nowa-webpack/nowa2/commit/7c62b24))
+* **utils:** parser supports providing a string to set alias ([de8032c](https://github.com/nowa-webpack/nowa2/commit/de8032c))
+* add utils definition ([5c75cc3](https://github.com/nowa-webpack/nowa2/commit/5c75cc3))
+* export IUtils as Runner.Utils ([144d3be](https://github.com/nowa-webpack/nowa2/commit/144d3be))
+* pass utils to modules / plugins ([7d3c0ed](https://github.com/nowa-webpack/nowa2/commit/7d3c0ed))
+* support prompt option ([04a8b9c](https://github.com/nowa-webpack/nowa2/commit/04a8b9c))
+* warn if nowa command is elevated ([d734a42](https://github.com/nowa-webpack/nowa2/commit/d734a42))
+
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.2.0...@nowa/core@0.3.0) (2018-01-04)
 

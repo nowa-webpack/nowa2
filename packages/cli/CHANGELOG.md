@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.3.1...@nowa/cli@0.4.0) (2018-01-18)
+
+
+### Features
+
+* add logo ([c1f99d2](https://github.com/nowa-webpack/nowa2/commit/c1f99d2))
+* output cli & core version with logo ([5486026](https://github.com/nowa-webpack/nowa2/commit/5486026))
+* **ininContext:** package.json parsing error terminates nowa immediately ([86ce8d6](https://github.com/nowa-webpack/nowa2/commit/86ce8d6))
+* **loadOptions:** support question prompts ([a77e51c](https://github.com/nowa-webpack/nowa2/commit/a77e51c))
+* support core@0.4.0 ([7884742](https://github.com/nowa-webpack/nowa2/commit/7884742))
+* warn if nowa command is elevated ([d734a42](https://github.com/nowa-webpack/nowa2/commit/d734a42))
+
+
+
+
 <a name="0.3.1"></a>
 ## [0.3.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.3.0...@nowa/cli@0.3.1) (2018-01-16)
 
