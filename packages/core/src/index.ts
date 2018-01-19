@@ -15,7 +15,7 @@ import { RunErrorPlugin } from './lib/plugins/runError';
 export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<IPlugin<Runner>>) => {
   const runner = new Runner(createUtils);
   for (const plugin of plugins) {
-    await plugin.apply(runner, createUtils(plugin.name));
+    await plugin.apply(runner, createUtils(plugin.constructor.name));
   }
   return runner;
 };

@@ -18,7 +18,7 @@ const getRandomColor = () => {
   for (let i = 0; i < 6; i++) {
     colorArr.push(letters[(Math.random() * 16) | 0]); // tslint:disable-line:no-bitwise
   }
-  return colorArr.join();
+  return colorArr.join('');
 };
 
 export const createUtils: Runner.UtilsCreator = (name: string = 'unknown') => {
@@ -59,16 +59,15 @@ export const createUtils: Runner.UtilsCreator = (name: string = 'unknown') => {
     },
   };
   const prompt = inquirer.createPromptModule();
+  const prefix = chalk`{magenta nowa} {hex('${color}') ${name}}`;
   return {
     chalk,
     logger: {
-      debug: isDebug
-        ? (first: any, ...rest: any[]) => console.log(chalk`{magenta nowa} {hex(${color})} {gray ${format(first, ...rest)}}`)
-        : () => {}, // tslint:disable-line:no-empty
-      error: (first: any, ...rest: any[]) => console.error(chalk`{magenta nowa} {hex(${color})} {red ${format(first, ...rest)}}`),
-      info: (first: any, ...rest: any[]) => console.log(chalk`{magenta nowa} {hex(${color})} {blueBright ${format(first, ...rest)}}`),
+      debug: isDebug ? (first: any, ...rest: any[]) => console.log(`${prefix} ${chalk`{gray ${format(first, ...rest)}}`}`) : () => {}, // tslint:disable-line:no-empty
+      error: (first: any, ...rest: any[]) => console.error(`${prefix} ${chalk`{red ${format(first, ...rest)}}`}`),
+      info: (first: any, ...rest: any[]) => console.log(`${prefix} ${chalk`{blueBright ${format(first, ...rest)}}`}`),
       log: console.log,
-      warn: (first: any, ...rest: any[]) => console.warn(chalk`{magenta nowa} {hex(${color})} {yellow ${format(first, ...rest)}}`),
+      warn: (first: any, ...rest: any[]) => console.warn(`${prefix} ${chalk`{yellow ${format(first, ...rest)}}`}`),
     },
     prompt: async (desc: string, options: object = {}) => {
       const question = { ...options, message: desc, name: `quick_prompt` };
