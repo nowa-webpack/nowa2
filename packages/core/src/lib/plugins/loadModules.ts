@@ -65,7 +65,7 @@ export class LoadModulesPlugin {
     throw new Error(`Can not load module ${pathOrModuleName}`);
   }
   private _checkIsNowaModule(module: Module.IConstructor, path: string): boolean {
-    if (module.prototype.$type && module.$hooks && module.$register) {
+    if (module.prototype.init && module.prototype.run) {
       debug(`${path} is a nowa module`);
       return true;
     } else {

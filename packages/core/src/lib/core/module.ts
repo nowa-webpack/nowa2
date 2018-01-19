@@ -11,6 +11,10 @@ export namespace Module {
   }
 
   export interface IConstructor<ModuleOptions = {}> extends Async {
+    prototype: {
+      init(): any;
+      run(cb?: any): any;
+    };
     new ($runtime: IRuntime<ModuleOptions>, $utils: IUtils): this;
   }
 
