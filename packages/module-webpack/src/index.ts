@@ -19,42 +19,55 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
   public alreadyRun = false;
 
   public async init() {
-    if (this.$runtime.moduleOptions.configFile) {
-      const config = utils.handleESModuleDefault(require(this.$runtime.moduleOptions.configFile));
-      this.config = await config;
+    const { logger } = this.$utils;
+    const rawConfigs: Array<Webpack.Configuration | Webpack.Configuration[]> = [];
+    const moduleOptions = this.$runtime.moduleOptions;
+    if (Array.isArray(moduleOptions)) {
+      logger.debug(`find ${moduleOptions.length} module options`);
+      for (const config of moduleOptions) {
+        rawConfigs.push(await this._initConfig(config));
+      }
     } else {
-      this.config = this.$runtime.moduleOptions.rawConfig;
+      logger.debug(`find single module options`);
+      rawConfigs.push(await this._initConfig(moduleOptions));
     }
-    if (!this.config) {
-      throw new Error(`module webpack needs one of configFile / rawConfig but got ${this.config}`);
-    }
-    if (typeof this.config === 'function') {
-      this.config = (this.config as any)({ context: this.$runtime.context, options: this.$runtime.options });
-    }
-    const overwriteConfigPath = resolve(this.$runtime.context, './webpack.config.js');
+    let configs = rawConfigs.reduce((p: Webpack.Configuration[], c) => {
+      if (Array.isArray(c)) {
+        p.push(...c);
+      } else {
+        p.push(c);
+      }
+      return p;
+    }, []);
+    logger.info(`find ${configs.length} webpack configs`);
+    const overwriteConfigPath = resolve(this.$runtime.context, './webpack.overwrite.js');
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
-
     if (overwriteConfig && typeof overwriteConfig === 'object') {
+      logger.debug(`find overwrite config is a object, send to parser`);
       const parserResult = utils.parser('webpack.config', this.$runtime.commands, () => {}, overwriteConfig); // tslint:disable-line:no-empty
       overwriteConfig = (parserResult && parserResult.result && parserResult.result[0]) || overwriteConfig;
+      if (typeof overwriteConfig === 'function') {
+        logger.debug(`find overwrite config for this command`);
+      }
     }
     if (typeof overwriteConfig === 'function') {
-      console.log(`overwrite webpack from ${overwriteConfigPath}`);
-      this.config = await overwriteConfig(this.config, this.$runtime, Webpack);
+      logger.info(`overwrite configs from ${overwriteConfigPath}`);
+      configs = await configs.map(config => overwriteConfig(config, this.$runtime, Webpack));
     }
-    let firstConfig: Webpack.Configuration = this.config as Webpack.Configuration;
-    if (Array.isArray(firstConfig)) {
-      firstConfig = firstConfig[0];
-    }
-    this.firstConfig = firstConfig;
+    this.config = configs.length === 1 ? configs[0] : configs;
+    this.firstConfig = configs[0];
+    logger.debug(`use configs[0] as firstConfig`, this.firstConfig);
     this.firstConfig.devServer ? await this._initWebpackDevServer() : await this._initWebpack();
   }
 
   public run(done: () => void) {
+    const { logger } = this.$utils;
     if (!this.alreadyRun) {
       if (this.firstConfig!.devServer) {
+        logger.info('starting webpack with dev server');
         this.startDevServer!(done);
       } else if (this.firstConfig!.watch) {
+        logger.info('starting webpack in watch mode');
         const watchOptions = this.firstConfig!.watchOptions || this.firstConfig!.watch || {};
         if ((watchOptions as any).stdin) {
           process.stdin.on('end', () => {
@@ -63,11 +76,33 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
           process.stdin.resume();
         }
         this.compiler!.watch(watchOptions as any, this.getCompilerCallback!(done));
-        console.log('\nWebpack is watching the files…\n');
       } else {
+        logger.info('starting webpack build');
         this.compiler!.run(this.getCompilerCallback!(done));
       }
       this.alreadyRun = true;
+    }
+  }
+
+  private async _initConfig(config: ModuleWebpack.SingleOption): Promise<Webpack.Configuration | Webpack.Configuration[]> {
+    let configFile: string;
+    if (typeof config !== 'string') {
+      if (config.rawConfig) {
+        return config.rawConfig;
+      }
+      if (config.configFile) {
+        configFile = config.configFile;
+      } else {
+        throw new Error(`module webpack needs one of configFile / rawConfig but got nothing, check your solution`);
+      }
+    } else {
+      configFile = config;
+    }
+    const userConfig: ModuleWebpack.ConfigFileContent = utils.handleESModuleDefault(require(configFile));
+    if (typeof userConfig === 'function') {
+      return userConfig({ context: this.$runtime.context, options: this.$runtime.options });
+    } else {
+      return userConfig;
     }
   }
 
