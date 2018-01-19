@@ -6,7 +6,7 @@ import * as Webpack from 'webpack';
 import * as WebpackDevServer from 'webpack-dev-server';
 import * as Stats from 'webpack/lib/Stats'; // tslint:disable-line:no-submodule-imports
 
-export default class ModuleWebpack extends Module.Callback<{ configFile?: string; rawConfig?: Webpack.Configuration }> {
+export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options> {
   public $name = 'webpack';
   public type: 'compiler' | 'server' | undefined;
   public compiler?: Webpack.Compiler;
@@ -345,5 +345,14 @@ export default class ModuleWebpack extends Module.Callback<{ configFile?: string
 }
 
 export namespace ModuleWebpack {
-
+  export type ConfigFileContent =
+    | (({ context, options }: { context: string; options: object }) => Webpack.Configuration | Webpack.Configuration[])
+    | Webpack.Configuration
+    | Webpack.Configuration[];
+  export interface ISingleOption {
+    configFile?: string;
+    rawConfig?: Webpack.Configuration | Webpack.Configuration[];
+  }
+  export type SingleOption = /* short for configFile */ string | ISingleOption;
+  export type Options = SingleOption | SingleOption[];
 }
