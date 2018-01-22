@@ -185,7 +185,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
   private async _initWebpackDevServer(): Promise<void> {
     // from webpack-dev-server
     // https://github.com/webpack/webpack-dev-server/blob/master/bin/webpack-dev-server.js
-    // 2.9.7
+    // 2.11.1
     const fs = require('fs');
     const net = require('net');
     const open = require('opn'); // tslint:disable-line
