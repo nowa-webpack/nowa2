@@ -1,8 +1,9 @@
 {
-  "lerna": "2.5.1",
+  "lerna": "2.8.0",
   "packages": ["packages/*"],
   "version": "independent",
-  "npmClientArgs": ["--registry=https://registry.npm.taobao.org"],
+  "npmClient": "yarn",
+  "useWorkspaces": true,
   "command": {
     "publish": {
       "message": "chore(release): publish",
