@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./packages",
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["es5", "es2015", "es2016", "es2017", "esnext"],
@@ -12,6 +13,9 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "paths": {
+      "@nowa/*": ["./*/src"]
+    },
     "removeComments": true,
     "sourceMap": true,
     "strict": true,
