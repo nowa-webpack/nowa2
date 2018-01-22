@@ -1,24 +1,9 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "baseUrl": "./packages",
-    "declaration": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["es5", "es2015", "es2016", "es2017", "esnext"],
-    "importHelpers": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "newLine": "LF",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "paths": {
       "@nowa/*": ["./*/src"]
-    },
-    "removeComments": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es2015"
+    }
   }
 }
