@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.3.0...@nowa/module-webpack@0.4.0) (2018-01-22)
+
+
+### Features
+
+* support core@0.4.0 ([848fa51](https://github.com/nowa-webpack/nowa2/commit/848fa51))
+* support receiving array as moduleOptions ([452c334](https://github.com/nowa-webpack/nowa2/commit/452c334))
+* warn if nowa command is elevated ([d734a42](https://github.com/nowa-webpack/nowa2/commit/d734a42))
+
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.2.0...@nowa/module-webpack@0.3.0) (2018-01-04)
 
