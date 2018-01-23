@@ -174,11 +174,11 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
         if (statsString) {
           process.stdout.write(statsString + '\n');
         }
+        done(); // only continue moduleQueue when hash changed
       }
       if (!firstOptions.watch && stats.hasErrors()) {
         process.exitCode = 2;
       }
-      done();
     };
   }
 
