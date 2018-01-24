@@ -25,24 +25,24 @@
     "debug": "^3.1.0",
     "fs-extra": "^5.0.0",
     "import-local": "^1.0.0",
-    "inquirer": "^5.0.0",
+    "inquirer": "^5.0.1",
     "is-elevated": "^2.0.1",
     "js-string-escape": "^1.0.1",
     "ora": "^1.3.0",
-    "semver": "^5.4.1",
-    "tslib": "^1.8.1",
-    "yargs": "^10.0.3",
-    "yargs-parser": "^8.1.0"
+    "semver": "^5.5.0",
+    "tslib": "^1.9.0",
+    "yargs": "^11.0.0",
+    "yargs-parser": "^9.0.2"
   },
   "devDependencies": {
     "@nowa/core": "^0.4.0",
     "@types/debug": "0.0.30",
     "@types/fs-extra": "^5.0.0",
     "@types/inquirer": "0.0.36",
-    "@types/node": "^8.0.56",
+    "@types/node": "^8.5.9",
     "@types/ora": "^1.3.1",
-    "@types/semver": "^5.4.0",
-    "@types/yargs": "^10.0.0"
+    "@types/semver": "^5.5.0",
+    "@types/yargs": "^10.0.1"
   },
   "peerDependencies": {
     "@nowa/core": "^0.4.0"
