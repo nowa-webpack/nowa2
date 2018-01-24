@@ -31,14 +31,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
       logger.debug(`find single module options`);
       rawConfigs.push(await this._initConfig(moduleOptions));
     }
-    let configs = rawConfigs.reduce((p: Webpack.Configuration[], c) => {
-      if (Array.isArray(c)) {
-        p.push(...c);
-      } else {
-        p.push(c);
-      }
-      return p;
-    }, []);
+    let configs = rawConfigs.reduce((p: Webpack.Configuration[], c) => p.concat(c), []);
     logger.info(`find ${configs.length} webpack configs`);
     const overwriteConfigPath = resolve(this.$runtime.context, './webpack.overwrite.js');
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
