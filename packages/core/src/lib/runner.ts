@@ -1,53 +1,52 @@
-import * as debugLog from 'debug';
-
 import { Module } from './core/module';
 import { Runnable } from './core/runnable';
 import { ModuleQueue } from './moduleQueue';
 import { IConfig, IConfigConfigValues, IPlugin, ISolution, ISolutionCommandDescription, IUtils } from './types';
 
-const debug = debugLog('Runner');
-
 export class Runner extends Runnable.Callback<Runner.PluginGroup> {
   public runtime: Runner.IRuntime = { parsed: {}, raw: {} } as any;
+  public utils: Runner.Utils;
   constructor(public $createUtils: Runner.UtilsCreator) {
     super();
+    this.utils = $createUtils('Runner');
   }
   public async init(): Promise<void> {
+    const { logger } = this.utils;
     try {
-      debug('apply init-start');
+      logger.debug('apply init-start');
       await this.$applyHook('init-start');
-      debug('apply init-context');
+      logger.debug('apply init-context');
       this.runtime.context = await this.$applyHookBail('init-context');
-      debug('apply load-config');
+      logger.debug('apply load-config');
       this.runtime.raw.config = await this.$applyHookBail('load-config', { context: this.runtime.context });
-      debug('apply load-solution');
+      logger.debug('apply load-solution');
       this.runtime.raw.solution = await this.$applyHookBail('load-solution', {
         config: this.runtime.raw.config,
         context: this.runtime.context,
       });
-      debug('apply load-plugins');
+      logger.debug('apply load-plugins');
       const plugins = await this.$applyHookBail('load-plugins', {
         config: this.runtime.raw.config,
         context: this.runtime.context,
         solution: this.runtime.raw.solution,
       });
-      debug(`load ${plugins.length} plugin(s) from config and solution`);
+      logger.debug(`load ${plugins.length} plugin(s) from config and solution`);
       for (const plugin of plugins) {
         await plugin.apply(this, this.$createUtils(plugin.name));
       }
-      debug('apply load-commands');
+      logger.debug('apply load-commands');
       this.runtime.raw.commands = await this.$applyHookBail('load-commands', {
         config: this.runtime.raw.config,
         context: this.runtime.context,
         solution: this.runtime.raw.solution,
       });
-      debug('apply parse-config');
+      logger.debug('apply parse-config');
       this.runtime.parsed.config = await this.$applyHookBail('parse-config', {
         commands: this.runtime.parsed.commands,
         context: this.runtime.context,
         ...this.runtime.raw,
       });
-      debug('apply parse-solution');
+      logger.debug('apply parse-solution');
       const { actualCommands, result: solutionResult } = await this.$applyHookBail('parse-solution', {
         commands: this.runtime.parsed.commands,
         context: this.runtime.context,
@@ -55,7 +54,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
       });
       this.runtime.parsed.solution = solutionResult;
       this.runtime.parsed.commands = actualCommands;
-      debug('apply load-options');
+      logger.debug('apply load-options');
       this.runtime.parsed.options = await this.$applyHookBail('load-options', {
         commands: this.runtime.parsed.commands,
         config: this.runtime.parsed.config,
@@ -64,16 +63,16 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
         rawSolution: this.runtime.raw.solution,
         solution: this.runtime.parsed.solution,
       });
-      debug('apply load-modules');
+      logger.debug('apply load-modules');
       this.runtime.modules = await this.$applyHookBail('load-modules', {
         context: this.runtime.context,
         createUtils: this.$createUtils,
         ...this.runtime.parsed,
       });
-      debug(`load ${this.runtime.modules.length} module(s)`);
-      debug('create & init moduleQueue');
-      this.runtime.moduleQueue = new ModuleQueue(this.runtime.modules);
-      debug('apply init-module-queue');
+      logger.debug(`load ${this.runtime.modules.length} module(s)`);
+      logger.debug('create & init moduleQueue');
+      this.runtime.moduleQueue = new ModuleQueue(this.runtime.modules, this.$createUtils('ModuleQueue'));
+      logger.debug('apply init-module-queue');
       await this.$applyHook('init-module-queue', {
         context: this.runtime.context,
         moduleQueue: this.runtime.moduleQueue,
@@ -81,25 +80,26 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
         ...this.runtime.parsed,
       });
       await this.runtime.moduleQueue.init();
-      debug('apply init-end');
+      logger.debug('apply init-end');
       await this.$applyHook('init-end', this);
     } catch (e) {
-      debug(`apply init-error because of ${e}`);
+      logger.debug(`apply init-error because of ${e}`);
       await this.$applyHook('init-error', { error: e });
     }
   }
 
   public async run(): Promise<void> {
+    const { logger } = this.utils;
     process.on('SIGINT', () => {
-      debug('signal SIGINT received');
-      debug('apply run-end');
+      logger.debug('signal SIGINT received');
+      logger.debug('apply run-end');
       this.$applyHook('run-end', this).then(() => process.exit(1));
     });
-    debug('apply run-start');
+    logger.debug('apply run-start');
     await this.$applyHook('run-start', this);
-    debug('run modules');
+    logger.debug('run modules');
     await this.runtime.moduleQueue.run(() => {
-      debug('apply run-end');
+      logger.debug('apply run-end');
       this.$applyHook('run-end', this);
     });
   }

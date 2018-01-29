@@ -1,47 +1,47 @@
-import * as debugLog from 'debug';
-
 import { Module } from './core/module';
 import { Runnable } from './core/runnable';
-
-const debug = debugLog('ModuleQueue');
+import { Runner } from './runner';
 
 export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   public runtime: ModuleQueue.IRuntime;
-  constructor(public modules: Module.InstanceType[]) {
+  constructor(public modules: Module.InstanceType[], public utils: Runner.Utils) {
     super();
-    debug(`construct with ${modules.length} modules`);
+    utils.logger.debug(`construct with ${modules.length} modules`);
     this.runtime = {
       loopModules: new Map(),
       validLoopID: 1,
     };
     for (const [index, module] of this.modules.entries()) {
-      debug(`construct ${module.$type} module ${module.$name}`);
       if (module.$type === 'callback') {
+        utils.logger.debug(`register callback module ${module.$name}`);
         this.runtime.loopModules.set(module, index);
       }
     }
-    debug(`got ${this.runtime.loopModules.size} callback modules`);
+    utils.logger.debug(`got ${this.runtime.loopModules.size} callback modules`);
   }
 
   public async init() {
-    debug('apply init-start');
+    const { logger } = this.utils;
+    logger.debug('apply init-start');
     await this.$applyHook('init-start');
-    for (const module of this.modules) {
+    for (const [index, module] of this.modules.entries()) {
+      logger.debug(`init ${module.$name} @ ${index}`);
       await this._initModule(module);
     }
-    debug('apply init-end');
+    logger.debug('apply init-end');
     await this.$applyHook('init-end');
   }
 
   public async run(done?: (error?: Error) => void) {
+    const { logger } = this.utils;
     this.runtime.done = done;
-    debug('apply run-start');
+    logger.debug('apply run-start');
     await this.$applyHook('run-start');
     const loopID = 1;
     for (const module of this.modules) {
       await this._runModule(module, loopID);
     }
-    debug('apply run-end');
+    logger.debug('apply run-end');
     await this.$applyHook('run-end');
     this.runtime.done && this.runtime.done();
   }
@@ -54,11 +54,13 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   }
 
   private async _runModule(module: Module.InstanceType, loopID: number) {
+    const { logger } = this.utils;
+    logger.debug(`try to run ${module.$name}`);
     if (!this._checkLoopIsValid(loopID)) {
-      debug(`loop ${loopID} is outDated and skipped, currentValidLoop ${this.runtime.validLoopID}`);
+      logger.debug(`loop ${loopID} is outDated and skipped, current valid loop is ${this.runtime.validLoopID}`);
       return;
     }
-    debug(`call ${module.$name}#run`);
+    logger.debug(`call ${module.$name}#run`);
     if (module.$type === 'async') {
       try {
         await module.run();
@@ -89,8 +91,10 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
   }
 
   private async _runNewLoop(module: Module.Callback, error?: Error) {
+    const { logger } = this.utils;
+    logger.debug(`${module.$name} try to create a new loop`);
     if (error) {
-      debug(`${module.$name} try to create a new loop but found error`, error);
+      logger.debug(`found error`, error);
       await this._handleRunError(error);
       return;
     }
@@ -100,11 +104,11 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
       await this._handleRunError(new Error(`can not locale which module to start`));
       return;
     }
-    this.modules[currentModuleIndex + 1] && debug(`continue on module`, this.modules[currentModuleIndex + 1].$name);
+    this.modules[currentModuleIndex + 1] && logger.debug(`continue on module`, this.modules[currentModuleIndex + 1].$name);
     for (const module of this.modules.slice(currentModuleIndex + 1)) {
       await this._runModule(module, loopID);
     }
-    debug('apply run-end');
+    logger.debug('apply run-end');
     await this.$applyHook('run-end');
     this.runtime.done && this.runtime.done();
   }
@@ -113,12 +117,14 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
     return this.runtime.validLoopID === loopID;
   }
   private async _handleInitError(error: any) {
-    debug('apply init-error because of', error);
+    const { logger } = this.utils;
+    logger.debug('apply init-error');
     this.$applyHook('init-error', { error });
   }
 
   private async _handleRunError(error: any) {
-    debug('apply run-error because of', error);
+    const { logger } = this.utils;
+    logger.debug('apply run-error');
     this.$applyHook('run-error', { error });
   }
 }
