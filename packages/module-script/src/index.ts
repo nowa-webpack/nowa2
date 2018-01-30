@@ -63,10 +63,10 @@ export default class ModuleScript extends Module.Async<ModuleScript.Options> {
   private async _runScript(script: string | (() => void | Promise<void>)) {
     const { logger } = this.$utils;
     if (typeof script === 'string') {
-      logger.info('shell ', script);
+      logger.info('run shell', script);
       await shell(script, { stdio: 'inherit', cwd: this.$runtime.context, maxBuffer: 100000000 });
     } else if (typeof script === 'function') {
-      logger.info('js ', script.name || 'anonymous');
+      logger.info('run js', script.name || 'anonymous');
       await script();
     }
   }
