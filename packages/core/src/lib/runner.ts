@@ -93,7 +93,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
     process.on('SIGINT', () => {
       logger.debug('signal SIGINT received');
       logger.debug('apply run-end');
-      this.$applyHook('run-end', this).then(() => process.exit(1));
+      this.$applyHook('run-end', this).then(() => process.exit(0));
     });
     logger.debug('apply run-start');
     await this.$applyHook('run-start', this);
