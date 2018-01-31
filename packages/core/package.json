@@ -1,6 +1,6 @@
 {
   "name": "@nowa/core",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "the nowa core",
   "scripts": {
     "clean": "rm -rf ./lib & rm -f ./index.*",

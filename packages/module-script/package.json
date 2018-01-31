@@ -1,6 +1,6 @@
 {
   "name": "@nowa/module-script",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "the nowa script module",
   "scripts": {
     "clean": "rm -f ./index.*",
@@ -24,7 +24,7 @@
     "execa": "^0.9.0"
   },
   "devDependencies": {
-    "@nowa/core": "^0.4.0",
+    "@nowa/core": "^0.4.1",
     "@types/execa": "^0.8.1"
   },
   "peerDependencies": {

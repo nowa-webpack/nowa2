@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.1"></a>
+## [0.4.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.4.0...@nowa/core@0.4.1) (2018-01-31)
+
+
+### Bug Fixes
+
+* **loadModules:** checkIsNowaModule always return false ([d2e692e](https://github.com/nowa-webpack/nowa2/commit/d2e692e))
+* ctrl+c exits with code 1 ([e48a47f](https://github.com/nowa-webpack/nowa2/commit/e48a47f))
+* logger output issue ([3901fdf](https://github.com/nowa-webpack/nowa2/commit/3901fdf))
+
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.3.0...@nowa/core@0.4.0) (2018-01-18)
 
