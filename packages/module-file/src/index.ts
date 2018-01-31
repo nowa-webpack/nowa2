@@ -1,8 +1,9 @@
-import { basename, resolve } from 'path';
+import { basename, dirname, resolve } from 'path';
 
 import { Module } from '@nowa/core';
 import { copy, emptyDir, ensureDir, move, remove } from 'fs-extra';
 import * as globby from 'globby';
+import * as isGlob from 'is-glob';
 
 export default class ModuleFile extends Module.Async<ModuleFile.Options> {
   public $name = 'file';
@@ -20,7 +21,8 @@ export default class ModuleFile extends Module.Async<ModuleFile.Options> {
     const { context } = this.$runtime;
     for (const [index, action] of this.actions.entries()) {
       const files = (await this._getFiles(action.from)).map(file => resolve(context, file));
-      logger.debug(`find ${files.length} files in action ${index}`);
+      logger.debug(`find ${files.length} paths in action ${index}`);
+      logger.debug(files);
       switch (action.type) {
         case 'remove':
           await Promise.all(
@@ -29,51 +31,61 @@ export default class ModuleFile extends Module.Async<ModuleFile.Options> {
               return remove(file);
             }),
           );
+          logger.info(`emptied ${files.length} file(s) / folder(s)`);
           continue;
         case 'empty':
           await Promise.all(
             files.map(file => {
-              this._folderCheck(file, action);
               logger.debug(`emptyDir ${file}`);
               return emptyDir(file);
             }),
           );
+          logger.info(`emptied ${files.length} folder(s)`);
           continue;
         case 'ensure':
           await Promise.all(
             files.map(file => {
-              this._folderCheck(file, action);
               logger.debug(`ensureDir ${file}`);
               return ensureDir(file);
             }),
           );
-          continue;
-        case 'copy':
-          if (!action.to.endsWith('/') && files.length > 1) {
-            logger.error(`in ${action}`);
-            logger.error('copy multiple files to a single file is not valid');
-            throw new Error('copy multiple to single file');
-          }
-          await Promise.all(
-            files.map(file => {
-              const target = action.to.endsWith('/') ? resolve(action.to, basename(file)) : action.to;
-              return copy(file, target);
-            }),
-          );
+          logger.info(`ensured ${files.length} folder(s)`);
           continue;
         case 'move':
-          if (!action.to.endsWith('/') && files.length > 1) {
-            logger.error(`in ${action}`);
-            logger.error('copy multiple files to a single file is not valid');
-            throw new Error('move multiple to single file');
+        case 'copy': {
+          const target = resolve(context, action.to);
+          const isDir = action.to.endsWith('/');
+          if (!isDir && files.length > 1) {
+            logger.error(`in`, action);
+            logger.error(`${action.type} multiple files to a single file is not valid`);
+            throw new Error(`${action.type} multiple to single file`);
           }
-          await Promise.all(
-            files.map(file => {
-              const target = action.to.endsWith('/') ? resolve(action.to, basename(file)) : action.to;
-              return move(file, target);
-            }),
-          );
+          if (isDir) {
+            await ensureDir(target);
+          } else {
+            await ensureDir(dirname(target));
+          }
+          if (action.type === 'copy') {
+            await Promise.all(
+              files.map(file => {
+                const dest = isDir ? resolve(target, basename(file)) : target;
+                logger.debug(`copy ${file} to ${dest}`);
+                return copy(file, dest, { overwrite: true });
+              }),
+            );
+            logger.info(`copied ${files.length} file(s) / folder(s)`);
+          } else if (action.type === 'move') {
+            await Promise.all(
+              files.map(file => {
+                const dest = isDir ? resolve(target, basename(file)) : target;
+                logger.debug(`copy ${file} to ${dest}`);
+                return move(file, dest, { overwrite: true });
+              }),
+            );
+            logger.info(`moved ${files.length} file(s) / folder(s)`);
+          }
           continue;
+        }
         default:
           logger.error(`find invalid type ${(action as ModuleFile.Action).type} @ action ${index}`);
           throw new Error('invalid action type');
@@ -82,18 +94,16 @@ export default class ModuleFile extends Module.Async<ModuleFile.Options> {
   }
 
   private async _getFiles(paths: string | string[]): Promise<string[]> {
-    return globby(paths, { cwd: this.$runtime.context, mark: true, nomount: true, nodir: false });
-  }
-
-  private _folderCheck(path: string, action: ModuleFile.Action): void {
-    const { logger } = this.$utils;
-    if (!path.endsWith('/')) {
-      logger.error(`in ${action}`);
-      logger.error(`in ${path}`);
-      logger.error(`${action.type} action can only be apply to a folder`);
-      logger.error(`please try to add a "/" to action.o for forcing matching folders`);
-      throw new Error(`${action.type} a file`);
-    }
+    const normalPaths: string[] = [];
+    const globPaths: string[] = [];
+    ([] as string[]).concat(paths).forEach(filePath => {
+      if (isGlob(filePath)) {
+        globPaths.push(filePath);
+      } else {
+        normalPaths.push(resolve(this.$runtime.context, filePath));
+      }
+    });
+    return [...normalPaths, ...(await globby(globPaths, { cwd: this.$runtime.context, nomount: false }))];
   }
 }
 
