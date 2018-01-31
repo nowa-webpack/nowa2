@@ -52,7 +52,8 @@
   },
   "types": "./",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "engines": {
     "node": ">=6.5"
