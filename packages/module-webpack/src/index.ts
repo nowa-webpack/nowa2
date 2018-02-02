@@ -37,7 +37,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
     if (overwriteConfig && typeof overwriteConfig === 'object') {
       logger.debug(`find overwrite config is a object, send to parser`);
-      const parserResult = utils.parser('webpack.config', this.$runtime.commands, () => {}, overwriteConfig); // tslint:disable-line:no-empty
+      const parserResult = utils.parser('webpack.config', this.$runtime.commands, logger.debug, overwriteConfig); // tslint:disable-line:no-empty
       overwriteConfig = (parserResult && parserResult.result && parserResult.result[0]) || overwriteConfig;
       if (typeof overwriteConfig === 'function') {
         logger.debug(`find overwrite config for this command`);
