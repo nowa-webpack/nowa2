@@ -20,19 +20,19 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
 
   public async init() {
     const { logger } = this.$utils;
-    const rawConfigs: Array<Webpack.Configuration | Webpack.Configuration[]> = [];
+    const configs: Array<Webpack.Configuration | Webpack.Configuration[]> = [];
     const moduleOptions = this.$runtime.moduleOptions;
     if (Array.isArray(moduleOptions)) {
       logger.debug(`find ${moduleOptions.length} module options`);
       for (const config of moduleOptions) {
-        rawConfigs.push(await this._initConfig(config));
+        configs.push(await this._initConfig(config));
       }
     } else {
       logger.debug(`find single module options`);
-      rawConfigs.push(await this._initConfig(moduleOptions));
+      configs.push(await this._initConfig(moduleOptions));
     }
-    let configs = rawConfigs.reduce((p: Webpack.Configuration[], c) => p.concat(c), []);
-    logger.info(`find ${configs.length} webpack configs`);
+    let finalConfigs = configs.reduce((p: Webpack.Configuration[], c) => p.concat(c), []);
+    logger.info(`find ${finalConfigs.length} webpack configs`);
     const overwriteConfigPath = resolve(this.$runtime.context, './webpack.overwrite.js');
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
     if (overwriteConfig && typeof overwriteConfig === 'object') {
@@ -45,10 +45,10 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
     }
     if (typeof overwriteConfig === 'function') {
       logger.info(`overwrite configs from ${overwriteConfigPath}`);
-      configs = await configs.map(config => overwriteConfig(config, this.$runtime, Webpack));
+      finalConfigs = await finalConfigs.map(config => overwriteConfig(config, this.$runtime, Webpack));
     }
-    this.config = configs.length === 1 ? configs[0] : configs;
-    this.firstConfig = configs[0];
+    this.config = finalConfigs.length === 1 ? finalConfigs[0] : finalConfigs;
+    this.firstConfig = finalConfigs[0];
     logger.debug(`use configs[0] as firstConfig`, this.firstConfig);
     this.firstConfig.devServer ? await this._initWebpackDevServer() : await this._initWebpack();
   }
@@ -80,6 +80,9 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
   private async _initConfig(config: ModuleWebpack.SingleOption): Promise<Webpack.Configuration | Webpack.Configuration[]> {
     let configFile: string;
     if (typeof config !== 'string') {
+      if (config.config) {
+        return config.config;
+      }
       if (config.rawConfig) {
         return config.rawConfig;
       }
@@ -379,7 +382,8 @@ export namespace ModuleWebpack {
     | Webpack.Configuration[];
   export interface ISingleOption {
     configFile?: string;
-    rawConfig?: Webpack.Configuration | Webpack.Configuration[];
+    config?: Webpack.Configuration | Webpack.Configuration[];
+    rawConfig?: ISingleOption['config'];
   }
   export type SingleOption = /* short for configFile */ string | ISingleOption;
   export type Options = SingleOption | SingleOption[];
