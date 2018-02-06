@@ -23,22 +23,22 @@ export class LoadModulesPlugin {
           const ClassConstructor = this._loadModule(module, context, prefixes, logger); // tslint:disable-line:variable-name
           if (this._checkIsNowaModule(ClassConstructor)) {
             logger.debug(`instantiating ${module}`);
-            instance = new ClassConstructor({ context, commands, options, moduleOptions: {} }, createUtils(ClassConstructor.name));
+            instance = new ClassConstructor({ context, commands, options, config: [] }, createUtils(ClassConstructor.name));
           } else {
             logger.debug(`${module} is not a nowa module`);
           }
         } else {
           logger.debug(`got module definition ${module[0]} with ${typeof module[1]} config`);
           const ClassConstructor = this._loadModule(module[0], context, prefixes, logger); // tslint:disable-line:variable-name
-          let moduleOptions = module[1];
-          if (typeof moduleOptions === 'function') {
+          let moduleConfig = module.slice(1);
+          if (typeof moduleConfig[0] === 'function') {
             logger.debug(`module config is a function, calling`);
-            moduleOptions = moduleOptions({ context, options });
-            logger.debug(`got moduleOptions ${moduleOptions}`);
+            moduleConfig = [].concat(moduleConfig[0]({ context, options }));
           }
+          logger.debug(`got moduleConfig ${moduleConfig}`);
           if (this._checkIsNowaModule(ClassConstructor)) {
             logger.debug(`instantiating ${module[0]}`);
-            instance = new ClassConstructor({ context, commands, options, moduleOptions }, createUtils(ClassConstructor.name));
+            instance = new ClassConstructor({ context, commands, options, config: moduleConfig }, createUtils(ClassConstructor.name));
           } else {
             logger.debug(`${module} is not a nowa module`);
           }
