@@ -44,7 +44,7 @@ export default class ModuleScript extends Module.Async<ModuleScript.Config> {
     const { logger } = this.$utils;
     if (this.options && this.options.parallel) {
       logger.debug('parallel mode');
-      await Promise.all(this.scripts!.map(this._runScript));
+      await Promise.all(this.scripts!.map(this._runScript, this));
     } else {
       logger.debug('sequential mode');
       for (const script of this.scripts!) {
