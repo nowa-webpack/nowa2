@@ -1,7 +1,10 @@
 export abstract class Hookable<HookGroup extends Hookable.IHookGroup> {
   public $hooks: Hookable.Registry<this> = {};
 
-  public $register<HookName extends keyof HookGroup>(hookName: HookName, handler: Hookable.Handler<HookGroup[HookName][0], HookGroup[HookName][1], this>): void {
+  public $register<HookName extends keyof HookGroup>(
+    hookName: HookName,
+    handler: Hookable.Handler<HookGroup[HookName][0], HookGroup[HookName][1], this>,
+  ): void {
     this.$hooks[hookName] || (this.$hooks[hookName] = []);
     this.$hooks[hookName]!.push(handler);
   }
@@ -14,7 +17,11 @@ export abstract class Hookable<HookGroup extends Hookable.IHookGroup> {
     return;
   }
 
-  public async $applyHookBail<HookName extends keyof HookGroup>(hookName: HookName, param?: HookGroup[HookName][0], FIFO: boolean = false): Promise<HookGroup[HookName][1]> {
+  public async $applyHookBail<HookName extends keyof HookGroup>(
+    hookName: HookName,
+    param?: HookGroup[HookName][0],
+    FIFO: boolean = false,
+  ): Promise<HookGroup[HookName][1]> {
     const plugins = this.$hooks[hookName] && (FIFO ? this.$hooks[hookName] : Array.from(this.$hooks[hookName]!).reverse());
     if (plugins) {
       for (const handler of plugins) {
@@ -27,7 +34,11 @@ export abstract class Hookable<HookGroup extends Hookable.IHookGroup> {
     throw new Error(`All ${hookName} hooks returns undefined`);
   }
 
-  public async $applyHookWaterfall<HookName extends keyof HookGroup>(hookName: HookName, initial: HookGroup[HookName][0], FIFO: boolean = false): Promise<HookGroup[HookName][1]> {
+  public async $applyHookWaterfall<HookName extends keyof HookGroup>(
+    hookName: HookName,
+    initial: HookGroup[HookName][0],
+    FIFO: boolean = false,
+  ): Promise<HookGroup[HookName][1]> {
     const plugins = this.$hooks[hookName] && (FIFO ? this.$hooks[hookName] : Array.from(this.$hooks[hookName]!).reverse());
     let prevResult = initial;
     if (plugins) {
@@ -49,5 +60,7 @@ export namespace Hookable {
     [hookName: string]: [any, any]; // hook-name: [param-pass-to-hook, expected-result-from-hook]
   }
 
-  export type Registry<This> = { [hookName in keyof IHookGroup]: Array<Hookable.Handler<IHookGroup[hookName][0], IHookGroup[hookName][1], This>> | undefined };
+  export type Registry<This> = {
+    [hookName in keyof IHookGroup]: Array<Hookable.Handler<IHookGroup[hookName][0], IHookGroup[hookName][1], This>> | undefined
+  };
 }

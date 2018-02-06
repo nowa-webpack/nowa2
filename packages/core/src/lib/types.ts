@@ -56,11 +56,16 @@ export interface ISolution {
   };
 }
 
+export interface ISolutionCommandDescriptionModuleWithConfig extends Array<any> {
+  '0': string;
+}
+
 export type ISolutionCommandDescription = [
   /* optionDescription */ { [optionName: string]: IOptionDescription },
   Array<
     /* modulePath */ | string
-    | [/* modulePath */ string, /* moduleOptions */ object | ((arg: { options: object; context: string }) => object)]
+    | [/* modulePath */ string, ((arg: { options: object; context: string }) => /* moduleConfig */ any[])]
+    | ISolutionCommandDescriptionModuleWithConfig
   >,
   /* description */ string | undefined
 ];
