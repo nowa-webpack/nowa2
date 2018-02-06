@@ -96,7 +96,7 @@ export default class ModuleFile extends Module.Async<ModuleFile.Config> {
 
   private async _getFiles(filePath: string): Promise<string[]> {
     if (isGlob(filePath)) {
-      return globby(filePath, { cwd: this.$runtime.context, nomount: false });
+      return globby(filePath, { cwd: this.$runtime.context });
     } else {
       return [filePath];
     }
