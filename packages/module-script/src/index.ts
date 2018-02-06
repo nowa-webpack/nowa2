@@ -1,26 +1,18 @@
 import { Module } from '@nowa/core';
 import { shell } from 'execa';
 
-export default class ModuleScript extends Module.Async<ModuleScript.Options> {
+export default class ModuleScript extends Module.Async<ModuleScript.Config> {
   public $name = 'script';
-  public scripts: ModuleScript.IShellContent[] = [];
+  public scripts?: ModuleScript.SingleScript[];
   public options?: ModuleScript.IOptions;
   public alreadyRun: boolean = false;
 
   public async init() {
     const { logger } = this.$utils;
-    const moduleOptions = this.$runtime.moduleOptions;
-    if (Array.isArray(moduleOptions)) {
-      logger.debug('arrayof string/function config received');
-      this.scripts.push(...moduleOptions.map(this.validateScript));
-    } else if (typeof moduleOptions === 'object') {
-      logger.debug('{ scripts: [] } config received');
-      this.options = moduleOptions.options;
-      this.scripts.push(...moduleOptions.scripts.map(this.validateScript));
-    } else {
-      logger.debug('simple string/function config received');
-      this.scripts.push(this.validateScript(moduleOptions));
-    }
+    const [scripts, options] = this.$runtime.config;
+    this.options = options || {};
+    this.scripts = ([] as ModuleScript.SingleScript[]).concat(scripts).map(this.validateScript);
+    logger.info(`got ${this.scripts.length} scripts`);
   }
 
   public async run() {
@@ -51,10 +43,10 @@ export default class ModuleScript extends Module.Async<ModuleScript.Options> {
     const { logger } = this.$utils;
     if (this.options && this.options.parallel) {
       logger.debug('parallel mode');
-      await Promise.all(this.scripts.map(this._runScript));
+      await Promise.all(this.scripts!.map(this._runScript));
     } else {
       logger.debug('sequential mode');
-      for (const script of this.scripts) {
+      for (const script of this.scripts!) {
         await this._runScript(script);
       }
     }
@@ -82,11 +74,11 @@ export default class ModuleScript extends Module.Async<ModuleScript.Options> {
 }
 
 export namespace ModuleScript {
-  export type IShellContent = string | (() => void | Promise<void>);
+  export type SingleScript = string | (() => void | Promise<void>);
   export interface IOptions {
     parallel?: boolean;
     noWait?: boolean;
     noRetrigger?: boolean;
   }
-  export type Options = IShellContent | IShellContent[] | { scripts: IShellContent[]; options?: IOptions };
+  export type Config = [SingleScript | SingleScript[], IOptions];
 }

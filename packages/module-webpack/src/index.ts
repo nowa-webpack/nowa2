@@ -6,7 +6,7 @@ import * as Webpack from 'webpack';
 import * as WebpackDevServer from 'webpack-dev-server';
 import * as Stats from 'webpack/lib/Stats'; // tslint:disable-line:no-submodule-imports
 
-export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options> {
+export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config> {
   public $name = 'webpack';
   public type: 'compiler' | 'server' | undefined;
   public compiler?: Webpack.Compiler;
@@ -20,19 +20,15 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
 
   public async init() {
     const { logger } = this.$utils;
+    const [webpackConfigs] = this.$runtime.config;
+    const userConfigs: ModuleWebpack.SingleConfig[] = ([] as ModuleWebpack.SingleConfig[]).concat(webpackConfigs);
     const configs: Array<Webpack.Configuration | Webpack.Configuration[]> = [];
-    const moduleOptions = this.$runtime.moduleOptions;
-    if (Array.isArray(moduleOptions)) {
-      logger.debug(`find ${moduleOptions.length} module options`);
-      for (const config of moduleOptions) {
-        configs.push(await this._initConfig(config));
-      }
-    } else {
-      logger.debug(`find single module options`);
-      configs.push(await this._initConfig(moduleOptions));
+    logger.debug(`find ${userConfigs.length} configs`);
+    for (const config of userConfigs) {
+      configs.push(await this._initConfig(config));
     }
     let finalConfigs = configs.reduce((p: Webpack.Configuration[], c) => p.concat(c), []);
-    logger.info(`find ${finalConfigs.length} webpack configs`);
+    logger.info(`got ${finalConfigs.length} webpack configs`);
     const overwriteConfigPath = resolve(this.$runtime.context, './webpack.overwrite.js');
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
     if (overwriteConfig && typeof overwriteConfig === 'object') {
@@ -77,7 +73,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
     }
   }
 
-  private async _initConfig(config: ModuleWebpack.SingleOption): Promise<Webpack.Configuration | Webpack.Configuration[]> {
+  private async _initConfig(config: ModuleWebpack.SingleConfig): Promise<Webpack.Configuration | Webpack.Configuration[]> {
     let configFile: string;
     if (typeof config !== 'string') {
       if (config.config) {
@@ -377,14 +373,16 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Options
 
 export namespace ModuleWebpack {
   export type ConfigFileContent =
-    | (({ context, options }: { context: string; options: object }) => Webpack.Configuration | Webpack.Configuration[])
+    | ((
+        { context, options }: { context: string; options: object },
+      ) => Webpack.Configuration | Webpack.Configuration[] | Promise<Webpack.Configuration | Webpack.Configuration[]>)
     | Webpack.Configuration
     | Webpack.Configuration[];
-  export interface ISingleOption {
+  export interface ISingleConfig {
     configFile?: string;
     config?: Webpack.Configuration | Webpack.Configuration[];
-    rawConfig?: ISingleOption['config'];
+    rawConfig?: ISingleConfig['config'];
   }
-  export type SingleOption = /* short for configFile */ string | ISingleOption;
-  export type Options = SingleOption | SingleOption[];
+  export type SingleConfig = /* short for configFile */ string | ISingleConfig;
+  export type Config = [SingleConfig | SingleConfig[]];
 }

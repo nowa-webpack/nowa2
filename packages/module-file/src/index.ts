@@ -5,21 +5,21 @@ import { copy, emptyDir, ensureDir, move, remove } from 'fs-extra';
 import * as globby from 'globby';
 import * as isGlob from 'is-glob';
 
-export default class ModuleFile extends Module.Async<ModuleFile.Options> {
+export default class ModuleFile extends Module.Async<ModuleFile.Config> {
   public $name = 'file';
-  public actions: ModuleFile.Action[] = [];
+  public actions?: ModuleFile.SingleAction[];
 
   public async init() {
     const { logger } = this.$utils;
-    const moduleOptions = this.$runtime.moduleOptions;
-    this.actions = this.actions.concat(moduleOptions);
-    logger.info(`find ${this.actions.length} file actions`);
+    const [actions] = this.$runtime.config;
+    this.actions = ([] as ModuleFile.SingleAction[]).concat(actions);
+    logger.info(`got ${this.actions.length} file actions`);
   }
 
   public async run() {
     const { logger } = this.$utils;
     const { context } = this.$runtime;
-    for (const [index, action] of this.actions.entries()) {
+    for (const [index, action] of this.actions!.entries()) {
       const files = (await this._getFiles(action.from)).map(file => resolve(context, file));
       logger.debug(`find ${files.length} paths in action ${index}`);
       logger.debug(files);
@@ -87,7 +87,7 @@ export default class ModuleFile extends Module.Async<ModuleFile.Options> {
           continue;
         }
         default:
-          logger.error(`find invalid type ${(action as ModuleFile.Action).type} @ action ${index}`);
+          logger.error(`find invalid type ${(action as ModuleFile.SingleAction).type} @ action ${index}`);
           throw new Error('invalid action type');
       }
     }
@@ -119,7 +119,7 @@ export namespace ModuleFile {
     type: 'copy' | 'move';
     to: string;
   }
-  export type Action = ISingleArgAction | IDoubleArgAction;
+  export type SingleAction = ISingleArgAction | IDoubleArgAction;
 
-  export type Options = Action | Action[];
+  export type Config = [SingleAction | SingleAction[]];
 }
