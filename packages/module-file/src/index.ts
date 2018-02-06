@@ -14,6 +14,7 @@ export default class ModuleFile extends Module.Async<ModuleFile.Config> {
     const [actions] = this.$runtime.config;
     this.actions = ([] as ModuleFile.SingleAction[]).concat(actions);
     logger.info(`got ${this.actions.length} file actions`);
+    logger.debug(this.actions);
   }
 
   public async run() {

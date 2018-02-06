@@ -13,6 +13,7 @@ export default class ModuleScript extends Module.Async<ModuleScript.Config> {
     this.options = options || {};
     this.scripts = ([] as ModuleScript.SingleScript[]).concat(scripts).map(this.validateScript);
     logger.info(`got ${this.scripts.length} scripts`);
+    logger.debug(this.scripts);
   }
 
   public async run() {

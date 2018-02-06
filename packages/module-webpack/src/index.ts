@@ -28,7 +28,6 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       configs.push(await this._initConfig(config));
     }
     let finalConfigs = configs.reduce((p: Webpack.Configuration[], c) => p.concat(c), []);
-    logger.info(`got ${finalConfigs.length} webpack configs`);
     const overwriteConfigPath = resolve(this.$runtime.context, './webpack.overwrite.js');
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
     if (overwriteConfig && typeof overwriteConfig === 'object') {
@@ -43,6 +42,8 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       logger.info(`overwrite configs from ${overwriteConfigPath}`);
       finalConfigs = await finalConfigs.map(config => overwriteConfig(config, this.$runtime, Webpack));
     }
+    logger.info(`got ${finalConfigs.length} webpack configs`);
+    logger.debug(finalConfigs);
     this.config = finalConfigs.length === 1 ? finalConfigs[0] : finalConfigs;
     this.firstConfig = finalConfigs[0];
     logger.debug(`use configs[0] as firstConfig`, this.firstConfig);
