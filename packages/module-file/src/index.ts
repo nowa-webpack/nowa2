@@ -94,24 +94,19 @@ export default class ModuleFile extends Module.Async<ModuleFile.Config> {
     }
   }
 
-  private async _getFiles(paths: string | string[]): Promise<string[]> {
-    const normalPaths: string[] = [];
-    const globPaths: string[] = [];
-    ([] as string[]).concat(paths).forEach(filePath => {
-      if (isGlob(filePath)) {
-        globPaths.push(filePath);
-      } else {
-        normalPaths.push(resolve(this.$runtime.context, filePath));
-      }
-    });
-    return [...normalPaths, ...(await globby(globPaths, { cwd: this.$runtime.context, nomount: false }))];
+  private async _getFiles(filePath: string): Promise<string[]> {
+    if (isGlob(filePath)) {
+      return globby(filePath, { cwd: this.$runtime.context, nomount: false });
+    } else {
+      return [filePath];
+    }
   }
 }
 
 export namespace ModuleFile {
   export interface IBaseAction {
     type: 'copy' | 'move' | 'remove' | 'empty' | 'ensure';
-    from: string | string[];
+    from: string;
   }
   export interface ISingleArgAction extends IBaseAction {
     type: 'remove' | 'empty' | 'ensure';
