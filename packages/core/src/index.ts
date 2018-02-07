@@ -1,6 +1,6 @@
 import { Module } from './lib/core/module';
 import { Runner } from './lib/runner';
-import { IPlugin } from './lib/types';
+import * as Types from './lib/types';
 import * as utils from './lib/utils';
 
 import { InitErrorPlugin } from './lib/plugins/initError';
@@ -12,7 +12,7 @@ import { ParseConfigPlugin } from './lib/plugins/parseConfig';
 import { ParseSolutionPlugin } from './lib/plugins/parseSolution';
 import { RunErrorPlugin } from './lib/plugins/runError';
 
-export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<IPlugin<Runner>>) => {
+export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<Types.IPlugin<Runner>>) => {
   const runner = new Runner(createUtils);
   for (const plugin of plugins) {
     await plugin.apply(runner, createUtils(plugin.constructor.name));
@@ -20,7 +20,7 @@ export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Ar
   return runner;
 };
 
-export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<IPlugin<Runner>>) => {
+export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<Types.IPlugin<Runner>>) => {
   const allPlugins = [
     new InitErrorPlugin(),
     new LoadConfigPlugin(),
@@ -35,4 +35,4 @@ export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plug
   return createRunner(createUtils, allPlugins);
 };
 
-export { Runner, Module, utils };
+export { Runner, Module, utils, Types };
