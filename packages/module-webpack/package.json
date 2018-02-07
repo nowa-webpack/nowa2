@@ -1,0 +1,47 @@
+{
+  "name": "@nowa/module-webpack",
+  "version": "0.5.0",
+  "description": "the nowa webpack module",
+  "scripts": {
+    "clean": "rm -f ./index.*",
+    "build": "npm run clean && tsc -p tsconfig.build.json"
+  },
+  "author": {
+    "name": "Tommy Troy Lin",
+    "email": "tommytroylin@gmail.com",
+    "url": "https://github.com/tommytroylin"
+  },
+  "homepage": "https://github.com/nowa-webpack/nowa2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nowa-webpack/nowa2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nowa-webpack/nowa2/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "supports-color": "^5.1.0"
+  },
+  "devDependencies": {
+    "@nowa/core": "^0.5.0",
+    "@types/supports-color": "^3.1.0",
+    "@types/webpack": "^3.8.4",
+    "@types/webpack-dev-server": "^2.9.2",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.1"
+  },
+  "peerDependencies": {
+    "@nowa/core": "^0.5.0",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.9.7"
+  },
+  "types": "./",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=6.5"
+  }
+}

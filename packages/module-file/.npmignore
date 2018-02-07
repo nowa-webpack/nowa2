@@ -1,0 +1,6 @@
+*.log
+.*
+/coverage
+/src/
+/test/
+/tsconfig.*
