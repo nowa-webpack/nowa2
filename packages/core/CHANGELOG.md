@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.4.1...@nowa/core@0.5.0) (2018-02-07)
+
+
+### Code Refactoring
+
+* rename moduleOptions to config ([42eec53](https://github.com/nowa-webpack/nowa2/commit/42eec53))
+
+
+### Features
+
+* **loadModules:** update plugin for break change ([8bbed0b](https://github.com/nowa-webpack/nowa2/commit/8bbed0b))
+
+
+### BREAKING CHANGES
+
+* all 0.4.0 compatible modules will break
+
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.4.0...@nowa/core@0.4.1) (2018-01-31)
 

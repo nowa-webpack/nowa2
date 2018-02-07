@@ -1,6 +1,6 @@
 {
   "name": "@nowa/module-file",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "the nowa file module",
   "scripts": {
     "clean": "rm -f ./index.*",
@@ -26,7 +26,7 @@
     "is-glob": "^4.0.0"
   },
   "devDependencies": {
-    "@nowa/core": "^0.4.1",
+    "@nowa/core": "^0.5.0",
     "@types/fs-extra": "^5.0.0",
     "@types/globby": "^6.1.0"
   },
