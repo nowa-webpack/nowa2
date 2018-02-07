@@ -34,7 +34,6 @@ export class LoadOptionsPlugin {
           case 'array':
           case 'boolean':
             yargOption.type = desc.type;
-            logger.debug();
             yargs.option(name, utils.deleteUndefined(yargOption));
             break;
           case 'choice':
