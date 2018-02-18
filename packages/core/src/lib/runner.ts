@@ -89,6 +89,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
   }
 
   public async run(): Promise<void> {
+    let isFirstRun = true;
     const { logger } = this.utils;
     process.on('SIGINT', () => {
       logger.debug('signal SIGINT received');
@@ -101,6 +102,11 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
     await this.runtime.moduleQueue.run(() => {
       logger.debug('apply run-end');
       this.$applyHook('run-end', this);
+      if (isFirstRun) {
+        logger.debug('apply first-run-end');
+        this.$applyHook('first-run-end', this);
+        isFirstRun = false;
+      }
     });
   }
 }
@@ -130,6 +136,7 @@ export namespace Runner {
     ];
     'init-end': [Runner, void];
     'run-start': [Runner, void];
+    'first-run-end': [Runner, void];
     'run-end': [Runner, void];
     'init-error': [{ error: any }, void];
     'run-error': [{ error: any }, void];
