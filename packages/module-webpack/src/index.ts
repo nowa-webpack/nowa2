@@ -8,7 +8,7 @@ import * as Stats from 'webpack/lib/Stats'; // tslint:disable-line:no-submodule-
 
 export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config> {
   public $name = 'webpack';
-  public type: 'compiler' | 'server' | undefined;
+  public mode: ModuleWebpack.IOptions['mode'];
   public compiler?: Webpack.Compiler;
   public getCompilerCallback?: (done: (error?: any) => void) => (err: any, stats: any) => void;
   public lastHash?: string;
@@ -20,7 +20,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
 
   public async init() {
     const { logger } = this.$utils;
-    const [webpackConfigs] = this.$runtime.config;
+    const [webpackConfigs, options] = this.$runtime.config;
     const userConfigs: ModuleWebpack.SingleConfig[] = ([] as ModuleWebpack.SingleConfig[]).concat(webpackConfigs);
     const configs: Array<Webpack.Configuration | Webpack.Configuration[]> = [];
     logger.debug(`find ${userConfigs.length} configs`);
@@ -47,16 +47,45 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     this.config = finalConfigs.length === 1 ? finalConfigs[0] : finalConfigs;
     this.firstConfig = finalConfigs[0];
     logger.debug(`use configs[0] as firstConfig`, this.firstConfig);
-    this.firstConfig.devServer ? await this._initWebpackDevServer() : await this._initWebpack();
+
+    const autoMode = async () => {
+      if (this.firstConfig!.devServer) {
+        this.mode = 'devServer';
+        return this._initWebpackDevServer();
+      } else if (this.firstConfig!.watch) {
+        this.mode = 'watch';
+      } else {
+        this.mode = 'run';
+      }
+      return this._initWebpack();
+    };
+
+    if (options && options.mode) {
+      this.mode = options.mode;
+      switch (options.mode) {
+        case 'devServer':
+          await this._initWebpackDevServer();
+          break;
+        case 'run':
+        case 'watch':
+          await this._initWebpack();
+          break;
+        default:
+          logger.error(`unknown mode ${options.mode}, ignored`);
+          await autoMode();
+      }
+    } else {
+      await autoMode();
+    }
   }
 
   public run(done: () => void) {
     const { logger } = this.$utils;
     if (!this.alreadyRun) {
-      if (this.firstConfig!.devServer) {
+      if (this.mode === 'devServer') {
         logger.info('starting webpack with dev server');
         this.startDevServer!(done);
-      } else if (this.firstConfig!.watch) {
+      } else if (this.mode === 'watch') {
         logger.info('starting webpack in watch mode');
         const watchOptions = this.firstConfig!.watchOptions || this.firstConfig!.watch || {};
         if ((watchOptions as any).stdin) {
@@ -75,23 +104,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   }
 
   private async _initConfig(config: ModuleWebpack.SingleConfig): Promise<Webpack.Configuration | Webpack.Configuration[]> {
-    let configFile: string;
-    if (typeof config !== 'string') {
-      if (config.config) {
-        return config.config;
-      }
-      if (config.rawConfig) {
-        return config.rawConfig;
-      }
-      if (config.configFile) {
-        configFile = config.configFile;
-      } else {
-        throw new Error(`module webpack needs one of configFile / rawConfig but got nothing, check your solution`);
-      }
-    } else {
-      configFile = config;
-    }
-    const userConfig: ModuleWebpack.ConfigFileContent = utils.handleESModuleDefault(require(configFile));
+    const userConfig = typeof config === 'string' ? utils.handleESModuleDefault(require(config)) : config;
     if (typeof userConfig === 'function') {
       return userConfig({ context: this.$runtime.context, options: this.$runtime.options });
     } else {
@@ -373,17 +386,15 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
 }
 
 export namespace ModuleWebpack {
+  export interface IOptions {
+    mode?: 'run' | 'watch' | 'devServer';
+  }
   export type ConfigFileContent =
     | ((
         { context, options }: { context: string; options: object },
       ) => Webpack.Configuration | Webpack.Configuration[] | Promise<Webpack.Configuration | Webpack.Configuration[]>)
     | Webpack.Configuration
     | Webpack.Configuration[];
-  export interface ISingleConfig {
-    configFile?: string;
-    config?: Webpack.Configuration | Webpack.Configuration[];
-    rawConfig?: ISingleConfig['config'];
-  }
-  export type SingleConfig = /* short for configFile */ string | ISingleConfig;
-  export type Config = [SingleConfig | SingleConfig[]];
+  export type SingleConfig = /* path to configFile */ string | ConfigFileContent;
+  export type Config = [SingleConfig | SingleConfig[], IOptions | undefined];
 }
