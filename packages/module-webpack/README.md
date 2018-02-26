@@ -3,13 +3,17 @@
 ## Module Config
 
 ```ts
-export interface ISingleConfig {
-  configFile?: string;
-  config?: Webpack.Configuration | Webpack.Configuration[];
-  rawConfig?: ISingleConfig['config'];
+export interface IOptions {
+  mode?: 'run' | 'watch' | 'devServer';
 }
-export type SingleConfig = /* short for configFile */ string | ISingleConfig;
-export type Config = ['webpack', SingleConfig | SingleConfig[]];
+export type ConfigFileContent =
+  | ((
+      { context, options }: { context: string; options: object },
+    ) => Webpack.Configuration | Webpack.Configuration[] | Promise<Webpack.Configuration | Webpack.Configuration[]>)
+  | Webpack.Configuration
+  | Webpack.Configuration[];
+export type SingleConfig = /* path to configFile */ string | ConfigFileContent;
+export type Config = ['webpack', SingleConfig | SingleConfig[], IOptions | undefined];
 ```
 
 ## Usage
@@ -17,19 +21,21 @@ export type Config = ['webpack', SingleConfig | SingleConfig[]];
 ```js
 const config1 = ['webpack', 'sompath/webpack.config.js']; // config file
 const config2 = ['webpack', ['sompath/webpack.app.js', 'sompath/webpack.page.js']]; // MultiCompiler
-const config3 = ['webpack', { configFile: 'sompath/webpack.config.js' }];
-const config4 = ['webpack', { config: { entry: './src/index.js', ...otherWebpackConfig } }];
+const config3 = ['webpack', { entry: './src/index.js', ...otherWebpackConfig }]; // raw config
+const config4 = ['webpack', { watch: true, ...o }]; // watch mode
+const config5 = ['webpack', { devServer: { ...d }, ...o }]; // devServer mode
+const config6 = ['webpack', { devServer: { ...d }, ...o }, { mode: 'run' }]; // run mode (ignore devServer)
 ```
 
 ## Mode
 
 there are 3 modes now
 
-* webpack normal
+* webpack run
 * webpack watch
 * webpack-dev-server
 
-`module-webpack` decide it directly from the final config.
+if `mode` is not set, `module-webpack` will decide it directly from the final config.
 
 1. `config.devServer` is truthy => webpack-dev-server
 1. `config.watch` is truthy => webpack watch source files and changes triggers recompile
