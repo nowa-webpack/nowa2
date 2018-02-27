@@ -2,6 +2,7 @@ import { Module } from './core/module';
 import { Runnable } from './core/runnable';
 import { ModuleQueue } from './moduleQueue';
 import { IConfig, IConfigConfigValues, IPlugin, ISolution, ISolutionCommandDescription, IUtils } from './types';
+import { captureStack } from './utils';
 
 export class Runner extends Runnable.Callback<Runner.PluginGroup> {
   public runtime: Runner.IRuntime = { parsed: {}, raw: {} } as any;
@@ -55,13 +56,33 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
       this.runtime.parsed.solution = solutionResult;
       this.runtime.parsed.commands = actualCommands;
       logger.debug('apply load-options');
-      this.runtime.parsed.options = await this.$applyHookBail('load-options', {
+      const options = await this.$applyHookBail('load-options', {
         commands: this.runtime.parsed.commands,
         config: this.runtime.parsed.config,
         context: this.runtime.context,
         rawConfig: this.runtime.raw.config,
         rawSolution: this.runtime.raw.solution,
         solution: this.runtime.parsed.solution,
+      });
+      const logOptionsWarning = (message: string) => {
+        logger.warn(message);
+        logger.debug(captureStack(message));
+      };
+      this.runtime.parsed.options = new Proxy(options, {
+        get(t, p) {
+          if (!t.hasOwnProperty(p)) {
+            logOptionsWarning('used a non-exist options property');
+          }
+          return (t as any)[p];
+        },
+        set(t, p, v) {
+          logOptionsWarning('should not modify options property');
+          return Reflect.set(t, p, v);
+        },
+        deleteProperty(t, p) {
+          logOptionsWarning('should not delete options property');
+          return Reflect.deleteProperty(t, p);
+        },
       });
       logger.debug('apply load-modules');
       this.runtime.modules = await this.$applyHookBail('load-modules', {
