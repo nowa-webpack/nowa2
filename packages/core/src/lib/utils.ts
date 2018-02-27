@@ -104,3 +104,9 @@ export const requireFile = async (filePath: string) => {
   }
   return handleESModuleDefault(require(filePath));
 };
+
+// tslint:disable-next-line:variable-name
+export const captureStack = (message: string, Constructor: ErrorConstructor = Error) => {
+  const error = new Constructor(message);
+  return error.stack;
+};
