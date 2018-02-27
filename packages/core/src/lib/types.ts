@@ -64,7 +64,7 @@ export type ISolutionCommandDescription = [
   /* optionDescription */ { [optionName: string]: IOptionDescription },
   Array<
     /* modulePath */ | string
-    | [/* modulePath */ string, ((arg: { options: object; context: string }) => /* moduleConfig */ any[])]
+    | [/* modulePath */ string, ((arg: { options: IConfigConfigValues[0]; context: string }) => /* moduleConfig */ any[])]
     | ISolutionCommandDescriptionModuleWithConfig
   >,
   /* description */ string | undefined
