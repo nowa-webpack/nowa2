@@ -56,16 +56,23 @@ export interface ISolution {
   };
 }
 
-export interface ISolutionCommandDescriptionModuleWithConfig extends Array<any> {
+export type ISolutionCommandModuleDescription =
+  | undefined
+  | /* modulePath */ string
+  | [/* modulePath */ string, ((arg?: { options: IConfigConfigValues[0]; context: string }) => /* moduleConfig */ any[] | Promise<any[]>)]
+  | ISolutionCommandModuleDescriptionWithConfig;
+
+export interface ISolutionCommandModuleDescriptionWithConfig extends Array<any> {
   '0': string;
 }
 
 export type ISolutionCommandDescription = [
   /* optionDescription */ { [optionName: string]: IOptionDescription },
   Array<
-    /* modulePath */ | string
-    | [/* modulePath */ string, ((arg: { options: IConfigConfigValues[0]; context: string }) => /* moduleConfig */ any[])]
-    | ISolutionCommandDescriptionModuleWithConfig
+    | ISolutionCommandModuleDescription
+    | ((
+        arg?: { options: IConfigConfigValues[0]; context: string },
+      ) => ISolutionCommandModuleDescription | Promise<ISolutionCommandModuleDescription>)
   >,
   /* description */ string | undefined
 ];
