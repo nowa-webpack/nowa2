@@ -11,8 +11,8 @@ export class LoadModulesPlugin {
 
   public apply(runner: Runner, { logger }: Runner.Utils) {
     const prefixes = [...(this.options.modulePrefixes || []), ...modulePrefixes];
-    logger.debug('module name prefixes', prefixes);
     runner.$register('load-modules', async ({ context, commands, options, solution, createUtils }) => {
+      logger.debug('module name prefixes', prefixes);
       const moduleArray = solution[1];
       logger.debug(`got ${moduleArray.length} module(s) to load`);
       const result: Module.InstanceType[] = [];
