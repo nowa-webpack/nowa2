@@ -30,7 +30,12 @@ export class LoadSolutionPlugin {
       const isModule = /^[@a-z]{1}/.test(solution);
       logger.debug(`it ${isModule ? 'is' : `isn't`} a node module`);
       const solutionPath = isModule ? solution : resolve(context, solution);
-      logger.info(`using solution @ ${solutionPath}`);
+      logger.info(`using solution ${solutionPath}`);
+      if (isModule) {
+        logger.info(`solution path ${require.resolve(solutionPath)}`);
+        const { version } = require(`${solutionPath}/package.json`);
+        version && logger.info(`solution version ${version}`);
+      }
       try {
         return handleESModuleDefault(require(solutionPath));
       } catch (e) {
