@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.5.0...@nowa/core@0.6.0) (2018-05-27)
+
+
+### Bug Fixes
+
+* **loadModules:** debug output order issue ([5112264](https://github.com/nowa-webpack/nowa2/commit/5112264))
+* compile errors after dependencies upgrade ([54b6241](https://github.com/nowa-webpack/nowa2/commit/54b6241))
+
+
+### Features
+
+* check options usage in runtime ([68a7922](https://github.com/nowa-webpack/nowa2/commit/68a7922))
+* export Types for solution development ([991ae51](https://github.com/nowa-webpack/nowa2/commit/991ae51))
+* **loadSolution:** output module solution's version & path ([5c8344e](https://github.com/nowa-webpack/nowa2/commit/5c8344e))
+* **runner:** add 'first-run-end' hook ([1623bb4](https://github.com/nowa-webpack/nowa2/commit/1623bb4))
+* output command help as a tree ([7442405](https://github.com/nowa-webpack/nowa2/commit/7442405))
+* support function module descriptions ([dae3799](https://github.com/nowa-webpack/nowa2/commit/dae3799))
+
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.4.1...@nowa/core@0.5.0) (2018-02-07)
 
