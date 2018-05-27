@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.5.0...@nowa/cli@0.5.1) (2018-05-27)
+
+
+
+
+**Note:** Version bump only for package @nowa/cli
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.4.3...@nowa/cli@0.5.0) (2018-05-27)
 
