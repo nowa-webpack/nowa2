@@ -13,11 +13,16 @@ export class LoadOptionsPlugin {
         .version(false)
         .help('help')
         .alias('h', 'help');
-      const [optionDescriptions, , description] = solution;
+      const [optionDescriptions, , description] = solution; // ignore moduleDescriptions
       const [configDefaults] = config;
       const { help } = rawSolution;
-      const desc = description || (help && help[commands[0]]);
-      desc && yargs.usage(desc);
+      if (!description) {
+        const result = utils.parser('solution.help', commands, logger.debug, help);
+        const desc = result && result.result;
+        desc && yargs.usage(desc);
+      } else {
+        yargs.usage(description);
+      }
       const questions: { [order: number]: inquirer.Question[] } = {};
       Object.keys(optionDescriptions).forEach(name => {
         const desc = optionDescriptions[name];
