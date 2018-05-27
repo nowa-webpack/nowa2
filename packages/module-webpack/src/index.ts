@@ -1,10 +1,12 @@
 import { resolve } from 'path';
 
 import { Module, utils } from '@nowa/core';
-import * as isSupportColor from 'supports-color';
+import * as supportsColor from 'supports-color';
 import * as Webpack from 'webpack';
 import * as WebpackDevServer from 'webpack-dev-server';
 import * as Stats from 'webpack/lib/Stats'; // tslint:disable-line:no-submodule-imports
+
+const isSupportColor = supportsColor.stdout;
 
 export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config> {
   public $name = 'webpack';
