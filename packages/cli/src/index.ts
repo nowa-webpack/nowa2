@@ -70,7 +70,7 @@ export const createUtils: Runner.UtilsCreator = (name: string = 'unknown') => {
     },
     prompt: async (desc: string, options: object = {}) => {
       const question = { ...options, message: desc, name: `quick_prompt` };
-      const { quick_prompt } = await prompt(question);
+      const { quick_prompt } = await prompt<{ quick_prompt: any }>(question);
       return quick_prompt;
     },
     spinner,

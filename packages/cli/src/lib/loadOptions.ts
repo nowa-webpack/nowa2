@@ -76,7 +76,7 @@ export class LoadOptionsPlugin {
         }
       });
       if (Object.keys(questions).length > 0) {
-        const orderedQuestions: inquirer.Questions = [];
+        const orderedQuestions: inquirer.Question[] = [];
         Object.keys(questions)
           .map(i => Number(i))
           .sort((a, b) => a - b)
