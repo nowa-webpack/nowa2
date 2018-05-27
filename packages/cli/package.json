@@ -1,6 +1,6 @@
 {
   "name": "@nowa/cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "The nowa command line tool",
   "scripts": {
     "clean": "rm -rf ./lib & rm -rf ./bin & rm -f ./index.*",

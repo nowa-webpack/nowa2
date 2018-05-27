@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-script@0.2.1...@nowa/module-script@0.2.2) (2018-05-27)
+
+
+
+
+**Note:** Version bump only for package @nowa/module-script
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-script@0.2.0...@nowa/module-script@0.2.1) (2018-05-27)
 

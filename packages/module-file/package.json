@@ -1,6 +1,6 @@
 {
   "name": "@nowa/module-file",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "the nowa file module",
   "scripts": {
     "clean": "rm -f ./index.*",
