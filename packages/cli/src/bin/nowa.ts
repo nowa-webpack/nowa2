@@ -10,8 +10,9 @@ import * as semver from 'semver';
 
 import { run } from '../index';
 import logo from '../lib/logo/small';
+const isDebug = !!process.env.NOWA_DEBUG;
 
-if (!importLocal(__filename)) {
+if (isDebug || !importLocal(__filename)) {
   const { version: cliVersion } = require(resolve(__dirname, '../package.json')); // tslint:disable-line:no-var-requires
   const { version: coreVersion } = require(`@nowa/core/package.json`); // tslint:disable-line:no-var-requires no-submodule-imports
   const isWindows: boolean = process.platform === 'win32';
