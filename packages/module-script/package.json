@@ -28,7 +28,7 @@
     "@types/execa": "^0.9.0"
   },
   "peerDependencies": {
-    "@nowa/core": "^0.5.0"
+    "@nowa/core": "^0.6.0"
   },
   "types": "./",
   "publishConfig": {

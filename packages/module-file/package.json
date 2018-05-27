@@ -31,7 +31,7 @@
     "@types/globby": "^6.1.0"
   },
   "peerDependencies": {
-    "@nowa/core": "^0.5.0"
+    "@nowa/core": "^0.6.0"
   },
   "types": "./",
   "publishConfig": {
