@@ -81,5 +81,5 @@ export namespace ModuleScript {
     noWait?: boolean;
     noRetrigger?: boolean;
   }
-  export type Config = [SingleScript | SingleScript[], IOptions];
+  export type Config = [SingleScript | SingleScript[], IOptions | undefined];
 }

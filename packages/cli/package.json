@@ -23,25 +23,23 @@
   "dependencies": {
     "@types/archy": "^0.0.31",
     "archy": "^1.0.0",
-    "chalk": "^2.3.0",
-    "cliui": "^4.0.0",
-    "debug": "^3.1.0",
-    "fs-extra": "^5.0.0",
+    "chalk": "^2.4.1",
+    "cliui": "^4.1.0",
+    "fs-extra": "^6.0.1",
     "import-local": "^1.0.0",
     "inquirer": "^5.0.1",
     "is-elevated": "^2.0.1",
     "ora": "^2.1.0",
     "semver": "^5.5.0",
-    "tslib": "^1.9.0",
+    "tslib": "^1.9.1",
     "yargs": "^11.0.0",
-    "yargs-parser": "^9.0.2"
+    "yargs-parser": "^10.0.0"
   },
   "devDependencies": {
     "@nowa/core": "^0.5.0",
-    "@types/debug": "^0.0.30",
     "@types/fs-extra": "^5.0.2",
     "@types/inquirer": "^0.0.41",
-    "@types/node": "^8.5.9",
+    "@types/node": "^10.1.2",
     "@types/ora": "^1.3.4",
     "@types/semver": "^5.5.0",
     "@types/yargs": "^11.0.0"
