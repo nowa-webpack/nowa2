@@ -21,14 +21,16 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@types/archy": "^0.0.31",
+    "archy": "^1.0.0",
     "chalk": "^2.3.0",
+    "cliui": "^4.0.0",
     "debug": "^3.1.0",
     "fs-extra": "^5.0.0",
     "import-local": "^1.0.0",
     "inquirer": "^5.0.1",
     "is-elevated": "^2.0.1",
-    "js-string-escape": "^1.0.1",
-    "ora": "^1.3.0",
+    "ora": "^2.1.0",
     "semver": "^5.5.0",
     "tslib": "^1.9.0",
     "yargs": "^11.0.0",
@@ -36,13 +38,13 @@
   },
   "devDependencies": {
     "@nowa/core": "^0.5.0",
-    "@types/debug": "0.0.30",
-    "@types/fs-extra": "^5.0.0",
-    "@types/inquirer": "0.0.36",
+    "@types/debug": "^0.0.30",
+    "@types/fs-extra": "^5.0.2",
+    "@types/inquirer": "^0.0.41",
     "@types/node": "^8.5.9",
-    "@types/ora": "^1.3.1",
+    "@types/ora": "^1.3.4",
     "@types/semver": "^5.5.0",
-    "@types/yargs": "^10.0.1"
+    "@types/yargs": "^11.0.0"
   },
   "peerDependencies": {
     "@nowa/core": "^0.5.0"

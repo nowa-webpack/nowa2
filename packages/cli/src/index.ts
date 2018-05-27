@@ -38,8 +38,7 @@ export const createUtils: Runner.UtilsCreator = (name: string = 'unknown') => {
       return oraInstance;
     },
     promise: (promise: Promise<any>, text?: string) => {
-      oraInstance.promise(promise, text);
-      return oraInstance;
+      return (ora as any).promise(promise, text); // @types/ora is not compatible with ora@2
     },
     start: (text: string = 'N/A') => {
       oraInstance.start(`${name} ${text}`);
