@@ -80,13 +80,10 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   }
 
   public run(done: () => void) {
-    const { logger } = this.$utils;
     if (!this.alreadyRun) {
       if (this.mode === 'devServer') {
-        logger.info('starting webpack with dev server');
         this.startDevServer!(done);
       } else if (this.mode === 'watch') {
-        logger.info('starting webpack in watch mode');
         const watchOptions = this.firstConfig!.watchOptions || this.firstConfig!.watch || {};
         if ((watchOptions as any).stdin) {
           process.stdin.on('end', () => {
@@ -96,7 +93,6 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
         }
         this.compiler!.watch(watchOptions as any, this.getCompilerCallback!(done));
       } else {
-        logger.info('starting webpack build');
         this.compiler!.run(this.getCompilerCallback!(done));
       }
       this.alreadyRun = true;
