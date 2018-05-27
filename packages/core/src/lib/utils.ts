@@ -8,31 +8,31 @@ export function parser(
   target: 'config.config',
   commands: string[],
   debug: (...args: any[]) => void,
-  source?: IConfigConfigRegistry,
+  source: IConfigConfigRegistry | undefined,
 ): { actualCommands: string[]; result: IConfigConfigValues } | undefined;
 export function parser(
   target: 'solution.commands' | 'config.commands',
   commands: string[],
   debug: (...args: any[]) => void,
-  source?: ISolutionCommandRegistry,
+  source: ISolutionCommandRegistry | undefined,
 ): { actualCommands: string[]; result: ISolutionCommandDescription } | undefined;
 export function parser(
   target: 'solution.commands' | 'config.commands' | 'config.config',
   commands: string[],
   debug: (...args: any[]) => void,
-  source?: ISolutionCommandRegistry | IConfigConfigRegistry,
+  source: ISolutionCommandRegistry | IConfigConfigRegistry | undefined,
 ): { actualCommands: string[]; result: IConfigConfigValues | ISolutionCommandDescription } | undefined;
 export function parser(
   target: string,
   commands: string[],
   debug: (...args: any[]) => void,
-  source?: any,
+  source: any,
 ): { actualCommands: string[]; result: any } | undefined;
 export function parser(
   target: string,
   commands: string[],
   debug: (...args: any[]) => void,
-  source?: any,
+  source: any,
 ): { actualCommands: string[]; result: any } | undefined {
   if (!source) {
     debug(`${target} is falsy`);

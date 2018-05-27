@@ -13,15 +13,17 @@ export interface ILogger {
   debug: (...args: any[]) => void;
 }
 
-export interface ISpinner {
-  start: (text: string) => this;
-  stop: () => this;
-  succeed: (text?: string) => this;
-  fail: (text?: string) => this;
-  warn: (text?: string) => this;
-  info: (text?: string) => this;
-  clear: () => this;
-  promise(promise: Promise<any>, text?: string): this;
+export interface ISpinner extends ISpinnerInstance {
+  promise(promise: Promise<any>, text?: string): ISpinnerInstance;
+}
+export interface ISpinnerInstance {
+  start: (text?: string) => ISpinnerInstance;
+  stop: () => ISpinnerInstance;
+  succeed: (text?: string) => ISpinnerInstance;
+  fail: (text?: string) => ISpinnerInstance;
+  warn: (text?: string) => ISpinnerInstance;
+  info: (text?: string) => ISpinnerInstance;
+  clear: () => ISpinnerInstance;
 }
 
 export interface IUtils {
@@ -49,11 +51,16 @@ export type IConfigConfigValues = [{ [optionName: string]: any }];
 export interface ISolution {
   commands: ISolutionCommandRegistry;
   help?: {
-    [commandName: string]: string;
+    [commandName: string]: ISolutionHelpRegistry;
   };
   nowa?: {
     plugins?: Array<string | [string, any]>;
   };
+}
+export interface ISolutionHelpRegistry {
+  _label?: string;
+  _default?: string;
+  [commandName: string]: ISolutionHelpRegistry | string | undefined;
 }
 
 export type ISolutionCommandModuleDescription =
@@ -77,6 +84,7 @@ export type ISolutionCommandDescription = [
   /* description */ string | undefined
 ];
 export interface ISolutionCommandRegistry {
+  default: string | ISolutionCommandDescription;
   [commandName: string]: string | ISolutionCommandDescription | ISolutionCommandRegistry;
 }
 
