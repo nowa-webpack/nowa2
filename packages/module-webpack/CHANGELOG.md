@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.5.0...@nowa/module-webpack@0.6.0) (2018-05-27)
+
+
+### Bug Fixes
+
+* compile errors after dependencies upgrade ([54b6241](https://github.com/nowa-webpack/nowa2/commit/54b6241))
+* remove info logs ([d6d2c7f](https://github.com/nowa-webpack/nowa2/commit/d6d2c7f))
+
+
+### Features
+
+* support mode change ([d2c2fa9](https://github.com/nowa-webpack/nowa2/commit/d2c2fa9))
+* support webpack 4 ([7baeb99](https://github.com/nowa-webpack/nowa2/commit/7baeb99))
+
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.4.1...@nowa/module-webpack@0.5.0) (2018-02-07)
 
