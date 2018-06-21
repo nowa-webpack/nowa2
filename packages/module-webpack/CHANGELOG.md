@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.6.2"></a>
+## [0.6.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.6.1...@nowa/module-webpack@0.6.2) (2018-06-21)
+
+
+### Bug Fixes
+
+* peerDependencies ranges ([96b0dc0](https://github.com/nowa-webpack/nowa2/commit/96b0dc0))
+
+
+
+
 <a name="0.6.1"></a>
 ## [0.6.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.6.0...@nowa/module-webpack@0.6.1) (2018-05-27)
 
