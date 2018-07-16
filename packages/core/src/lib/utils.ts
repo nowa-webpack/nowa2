@@ -32,7 +32,7 @@ export function parser(
     const keys: pathToRegexp.Key[] = [];
     const re = pathToRegexp(path, keys);
     const test = (path: string): { [paramName: string]: string } | null => {
-      const result = re.exec(path);
+      const result = re.exec(`/${path}`);
       if (!result || keys.length === 0) {
         return result ? {} : null;
       }
