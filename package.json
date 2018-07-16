@@ -30,7 +30,11 @@
     "typescript": "^2.8.3"
   },
   "workspaces": {
-    "packages": ["packages/*"],
-    "nohoist": ["**/**"]
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/**"
+    ]
   }
 }

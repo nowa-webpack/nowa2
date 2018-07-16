@@ -6,12 +6,15 @@ export class ParseSolutionPlugin {
     runner.$register('parse-solution', async ({ config, commands, solution }) => {
       if (commands.length === 0) {
         logger.debug('no command found');
-        return { actualCommands: [], result: [{}, [], undefined] as [{}, any[], undefined] };
+        return [{}, [], undefined] as [{}, any[], undefined];
       }
       const configResult = parser('config.commands', commands, logger.debug, config.commands);
       if (configResult) {
         logger.debug('using config.commands');
-        return configResult;
+        if (typeof configResult.result === 'function') {
+          return (configResult.result as any)({ params: configResult.params });
+        }
+        return configResult.result;
       }
       const solutionResult = parser('solution.commands', commands, logger.debug, solution.commands);
       if (solutionResult) {
