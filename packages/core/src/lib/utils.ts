@@ -1,6 +1,6 @@
 import { constants } from 'fs';
-
 import { access } from 'fs-extra';
+import * as pathToRegexp from 'path-to-regexp';
 
 import { IConfigConfigRegistry, IConfigConfigValues, ISolutionCommandDescription, ISolutionCommandRegistry } from './types';
 
@@ -9,67 +9,51 @@ export function parser(
   commands: string[],
   debug: (...args: any[]) => void,
   source: IConfigConfigRegistry | undefined,
-): { actualCommands: string[]; result: IConfigConfigValues } | undefined;
+): { params: { [paramName: string]: string }; result: IConfigConfigValues } | undefined;
 export function parser(
   target: 'solution.commands' | 'config.commands',
   commands: string[],
   debug: (...args: any[]) => void,
   source: ISolutionCommandRegistry | undefined,
-): { actualCommands: string[]; result: ISolutionCommandDescription } | undefined;
+): { params: { [paramName: string]: string }; result: ISolutionCommandDescription } | undefined;
 export function parser(
   target: 'solution.commands' | 'config.commands' | 'config.config',
   commands: string[],
   debug: (...args: any[]) => void,
   source: ISolutionCommandRegistry | IConfigConfigRegistry | undefined,
-): { actualCommands: string[]; result: IConfigConfigValues | ISolutionCommandDescription } | undefined;
-export function parser(
-  target: string,
-  commands: string[],
-  debug: (...args: any[]) => void,
-  source: any,
-): { actualCommands: string[]; result: any } | undefined;
-export function parser(
-  target: string,
-  commands: string[],
-  debug: (...args: any[]) => void,
-  source: any,
-): { actualCommands: string[]; result: any } | undefined {
+): { params: { [paramName: string]: string }; result: IConfigConfigValues | ISolutionCommandDescription } | undefined {
+  // TODO: Stop this overload
   if (!source) {
     debug(`${target} is falsy`);
     return undefined;
   }
-  let cursor = source;
-  let index = 0;
-  do {
-    // commands ['{command1}', '{command2}']
-    const currentCommandPart = commands[index] || 'default';
-    const currentCommand = commands.slice(0, index + 1);
-    const currentPath = currentCommand.join('.');
-    let next = cursor[currentCommandPart];
-    if (typeof next === 'string') {
-      next = cursor[next];
-    }
-    if (Array.isArray(next)) {
-      debug(`find ${target} @ ${target}.${currentPath}`);
-      return { result: next as IConfigConfigValues | ISolutionCommandDescription, actualCommands: currentCommand };
-    } else if (next !== undefined) {
-      cursor = next;
-      index += 1;
-      debug(`continue on ${target}.${currentPath}`);
-    } else {
-      if (cursor.default) {
-        debug(`find and try to fallback to ${target}.${commands.slice(0, index).join('.')}.default`);
-        if (Array.isArray(cursor.default)) {
-          return { result: cursor.default as IConfigConfigValues | ISolutionCommandDescription, actualCommands: currentCommand };
-        } else {
-          debug(`default config should be an array`);
-          return undefined;
-        }
+  const commandPath = '/' + commands.join('/');
+  const routes = Object.keys(source).map(path => {
+    const keys: pathToRegexp.Key[] = [];
+    const re = pathToRegexp(path, keys);
+    const test = (path: string): { [paramName: string]: string } | null => {
+      const result = re.exec(path);
+      if (!result || keys.length === 0) {
+        return result ? {} : null;
       }
-      break;
+      const params: { [paramName: string]: string } = {};
+      keys.forEach(({ name }, index) => {
+        params[name] = result[index + 1];
+      });
+      return params;
+    };
+    return {
+      result: source[path],
+      test,
+    };
+  });
+  for (const route of routes) {
+    const { test, result } = route;
+    const params = test(commandPath);
+    if (params) {
+      return { params, result };
     }
-  } while (cursor);
-  debug(`can not retrieve from ${target}.${commands.join('.')}`);
+  }
   return undefined;
 }
 

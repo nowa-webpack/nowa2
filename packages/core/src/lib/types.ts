@@ -43,10 +43,12 @@ export interface IConfig {
 }
 
 export interface IConfigConfigRegistry {
-  [commandName: string]: string | IConfigConfigValues | IConfigConfigRegistry;
+  [commandPath: string]:
+    | IConfigConfigValues
+    | ((arg?: { params: { [paramName: string]: string }; context: string }) => IConfigConfigValues);
 }
 
-export type IConfigConfigValues = [{ [optionName: string]: any }];
+export type IConfigConfigValues = { [optionName: string]: any };
 
 export interface ISolution {
   commands: ISolutionCommandRegistry;
@@ -84,8 +86,9 @@ export type ISolutionCommandDescription = [
   /* description */ string | undefined
 ];
 export interface ISolutionCommandRegistry {
-  default: string | ISolutionCommandDescription;
-  [commandName: string]: string | ISolutionCommandDescription | ISolutionCommandRegistry;
+  [commandPath: string]:
+    | ISolutionCommandDescription
+    | ((arg?: { options: IConfigConfigValues[0]; context: string }) => ISolutionCommandDescription);
 }
 
 export interface IBaseOptionDescription {

@@ -48,13 +48,12 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
         ...this.runtime.raw,
       });
       logger.debug('apply parse-solution');
-      const { actualCommands, result: solutionResult } = await this.$applyHookBail('parse-solution', {
+      const solutionResult = await this.$applyHookBail('parse-solution', {
         commands: this.runtime.parsed.commands,
         context: this.runtime.context,
         ...this.runtime.raw,
       });
       this.runtime.parsed.solution = solutionResult;
-      this.runtime.parsed.commands = actualCommands;
       logger.debug('apply load-options');
       const options = await this.$applyHookBail('load-options', {
         commands: this.runtime.parsed.commands,
@@ -141,7 +140,7 @@ export namespace Runner {
     'load-plugins': [Pick<IRuntime, 'context'> & Pick<IRuntime['raw'], 'config' | 'solution'>, Array<IPlugin<Runner>>];
     'load-commands': [Pick<IRuntime, 'context'> & Pick<IRuntime['raw'], 'config' | 'solution'>, IRuntime['raw']['commands']];
     'parse-config': [Pick<IRuntime, 'context'> & IRuntime['raw'], IRuntime['parsed']['config']];
-    'parse-solution': [Pick<IRuntime, 'context'> & IRuntime['raw'], { actualCommands: string[]; result: IRuntime['parsed']['solution'] }];
+    'parse-solution': [Pick<IRuntime, 'context'> & IRuntime['raw'], IRuntime['parsed']['solution']];
     'load-options': [
       Pick<IRuntime, 'context'> &
         Pick<IRuntime['parsed'], 'commands' | 'config' | 'solution'> & {
