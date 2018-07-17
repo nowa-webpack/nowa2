@@ -6,21 +6,16 @@ export class LoadOptionsPlugin {
   constructor(public options: LoadOptionsPlugin.IOptions) {}
   public apply(runner: Runner, pluginUtils: Runner.Utils) {
     const { logger } = pluginUtils;
-    runner.$register('load-options', async ({ commands, config, solution, rawSolution }) => {
+    runner.$register('load-options', async ({ config, solution }) => {
       const yargs = this.options.yargs;
       const inquirer = this.options.inquirer;
       yargs
         .version(false)
         .help('help')
         .alias('h', 'help');
-      const [optionDescriptions, , description] = solution; // ignore moduleDescriptions
-      const [configDefaults] = config;
-      const { help } = rawSolution;
-      if (!description) {
-        const result = utils.parser('solution.help', commands, logger.debug, help);
-        const desc = result && result.result;
-        desc && yargs.usage(desc);
-      } else {
+      const { options: optionDescriptions, description } = solution; // ignore moduleDescriptions
+      const configDefaults = config;
+      if (description) {
         yargs.usage(description);
       }
       const questions: { [order: number]: inquirer.Question[] } = {};
