@@ -30,9 +30,9 @@ export function parser(
   const commandPath = '/' + commands.join('/');
   const routes = Object.keys(source).map(path => {
     const keys: pathToRegexp.Key[] = [];
-    const re = pathToRegexp(path, keys);
+    const re = pathToRegexp(`/${path}`, keys);
     const test = (path: string): { [paramName: string]: string } | null => {
-      const result = re.exec(`/${path}`);
+      const result = re.exec(path);
       if (!result || keys.length === 0) {
         return result ? {} : null;
       }

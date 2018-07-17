@@ -6,7 +6,7 @@ export class ParseSolutionPlugin {
     runner.$register('parse-solution', async ({ config, commands, solution }) => {
       if (commands.length === 0) {
         logger.debug('no command found');
-        return [{}, [], undefined] as [{}, any[], undefined];
+        return { options: {}, actions: [] };
       }
       const configResult = parser('config.commands', commands, logger.debug, config.commands);
       if (configResult) {
