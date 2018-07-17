@@ -13,7 +13,7 @@ export class LoadModulesPlugin {
     const prefixes = [...(this.options.modulePrefixes || []), ...modulePrefixes];
     runner.$register('load-modules', async ({ context, commands, options, solution, createUtils }) => {
       logger.debug('module name prefixes', prefixes);
-      const moduleArray = solution[1];
+      const moduleArray = solution.actions;
       logger.debug(`got ${moduleArray.length} module(s) to load`);
       const result: Module.InstanceType[] = [];
       for (let [index, module] of moduleArray.entries()) {

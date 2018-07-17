@@ -20,7 +20,7 @@ export class LoadCommandsPlugin {
       const { _ } = parser(commands);
       logger.debug(`got actual commands ${_.join(' ')}`);
       if (_.length === 0) {
-        const helpInfo = solution.help;
+        const helpInfo = solution.intro;
         if (helpInfo) {
           logger.debug(`got help information`, helpInfo);
           logger.log(`Available NOWA Commands:`);
@@ -57,7 +57,7 @@ function convertSubHelp(key: string, help: string | Types.ISolutionHelpRegistry 
       }),
   };
 }
-function convertHelpToArchy(help: Types.ISolution['help'] = {}): archy.Data {
+function convertHelpToArchy(help: Types.ISolution['intro'] = {}): archy.Data {
   return {
     label: '',
     nodes: Object.keys(help).map(key => {

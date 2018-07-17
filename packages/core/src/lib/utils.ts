@@ -21,8 +21,8 @@ export function parser(
   commands: string[],
   debug: (...args: any[]) => void,
   source: ISolutionCommandRegistry | IConfigConfigRegistry | undefined,
-): { params: { [paramName: string]: string }; result: IConfigConfigValues | ISolutionCommandDescription } | undefined {
-  // TODO: Stop this overload
+): { params: { [paramName: string]: string }; result: IConfigConfigValues | ISolutionCommandDescription | string } | undefined {
+  // TODO: Stop this overload, remove parser
   if (!source) {
     debug(`${target} is falsy`);
     return undefined;

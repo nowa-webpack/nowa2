@@ -52,7 +52,7 @@ export type IConfigConfigValues = { [optionName: string]: any };
 
 export interface ISolution {
   commands: ISolutionCommandRegistry;
-  help?: {
+  intro?: {
     [commandName: string]: ISolutionHelpRegistry;
   };
   nowa?: {
@@ -75,16 +75,16 @@ export interface ISolutionCommandModuleDescriptionWithConfig extends Array<any> 
   '0': string;
 }
 
-export type ISolutionCommandDescription = [
-  /* optionDescription */ { [optionName: string]: IOptionDescription },
-  Array<
+export interface ISolutionCommandDescription {
+  options: { [optionName: string]: IOptionDescription };
+  actions: Array<
     | ISolutionCommandModuleDescription
     | ((
         arg?: { options: IConfigConfigValues[0]; context: string },
       ) => ISolutionCommandModuleDescription | Promise<ISolutionCommandModuleDescription>)
-  >,
-  /* description */ string | undefined
-];
+  >;
+  description?: string | undefined;
+}
 export interface ISolutionCommandRegistry {
   [commandPath: string]:
     | ISolutionCommandDescription
