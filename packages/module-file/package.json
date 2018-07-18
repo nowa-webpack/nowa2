@@ -26,12 +26,12 @@
     "is-glob": "^4.0.0"
   },
   "devDependencies": {
-    "@nowa/core": "^0.6.0",
+    "@nowa/core": "^0.7.1",
     "@types/fs-extra": "^5.0.2",
     "@types/globby": "^6.1.0"
   },
   "peerDependencies": {
-    "@nowa/core": "^0.6.0"
+    "@nowa/core": "^0.7.1"
   },
   "types": "./",
   "publishConfig": {
