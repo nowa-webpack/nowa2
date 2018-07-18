@@ -45,7 +45,7 @@
     "@types/yargs": "^11.0.0"
   },
   "peerDependencies": {
-    "@nowa/core": "^0.6.0"
+    "@nowa/core": "^0.7.1"
   },
   "bin": {
     "nowa2": "./bin/nowa.js"
