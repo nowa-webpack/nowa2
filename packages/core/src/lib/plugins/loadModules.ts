@@ -74,7 +74,11 @@ export class LoadModulesPlugin {
         try {
           return handleESModuleDefault(require(modulePath));
         } catch (e) {
-          logger.debug(e);
+          if (e.stack.indexOf(`Error: Cannot find module '${modulePath}'`) === 0) {
+            logger.debug(e);
+          } else {
+            throw e;
+          }
         }
       }
     } else {
@@ -85,7 +89,7 @@ export class LoadModulesPlugin {
     throw new Error('module load error');
   }
   private _checkIsNowaModule(module: Module.IConstructor): boolean {
-    return !!(module.prototype.init && module.prototype.run);
+    return !!(module && module.prototype && module.prototype.init && module.prototype.run);
   }
 }
 
