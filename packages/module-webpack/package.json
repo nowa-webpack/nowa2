@@ -4,7 +4,8 @@
   "description": "the nowa webpack module",
   "scripts": {
     "clean": "rm -f ./index.*",
-    "build": "npm run clean && tsc -p tsconfig.build.json"
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build"
   },
   "author": {
     "name": "Tommy Troy Lin",
