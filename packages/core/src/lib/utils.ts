@@ -17,11 +17,17 @@ export function parser(
   source: ISolutionCommandRegistry | undefined,
 ): { params: { [paramName: string]: string }; result: ISolutionCommandDescription } | undefined;
 export function parser(
-  target: 'solution.commands' | 'config.commands' | 'config.config',
+  target: string,
   commands: string[],
   debug: (...args: any[]) => void,
-  source: ISolutionCommandRegistry | IConfigConfigRegistry | undefined,
-): { params: { [paramName: string]: string }; result: IConfigConfigValues | ISolutionCommandDescription | string } | undefined {
+  source: { [name: string]: any } | undefined,
+): { params: { [paramName: string]: string }; result: any } | undefined;
+export function parser(
+  target: string,
+  commands: string[],
+  debug: (...args: any[]) => void,
+  source: { [name: string]: any } | undefined,
+): { params: { [paramName: string]: string }; result: any } | undefined {
   // TODO: Stop this overload, remove parser
   if (!source) {
     debug(`${target} is falsy`);
