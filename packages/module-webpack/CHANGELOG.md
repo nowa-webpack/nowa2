@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.6.2...@nowa/module-webpack@0.7.0) (2018-07-18)
+
+
+### Features
+
+* adapt to [@nowa](https://github.com/nowa)/core 0.7.1 ([4837070](https://github.com/nowa-webpack/nowa2/commit/4837070))
+
+
+
+
 <a name="0.6.2"></a>
 ## [0.6.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.6.1...@nowa/module-webpack@0.6.2) (2018-06-21)
 
