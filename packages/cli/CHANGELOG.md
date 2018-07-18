@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.5.1...@nowa/cli@0.6.0) (2018-07-18)
+
+
+### Features
+
+* support new command description format ([10ca293](https://github.com/nowa-webpack/nowa2/commit/10ca293))
+
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.5.0...@nowa/cli@0.5.1) (2018-05-27)
 

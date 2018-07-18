@@ -274,13 +274,13 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       options.watchOptions = this.firstConfig!.watchOptions;
     }
     if (!options.stats) {
-      options.stats = {
+      (options.stats as any) = {
         cached: false,
         cachedAssets: false,
       };
     }
-    if (typeof options.stats === 'object' && typeof options.stats.colors === 'undefined') {
-      options.stats = { ...options.stats, colors: isSupportColor };
+    if (typeof options.stats === 'object' && typeof (options.stats as any).colors === 'undefined') {
+      (options.stats as any) = { ...options.stats, colors: isSupportColor };
     }
     if (options.open && !options.openPage) {
       options.openPage = '';
@@ -307,7 +307,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     this.startDevServer = async (done: () => void) => {
       addDevServerEntrypoints(webpackOptions, options);
       await this._initWebpack();
-      if (options.progress) {
+      if ((options as any).progress) {
         this.compiler!.apply(new Webpack.ProgressPlugin());
       }
       const donePromise = new Promise(resolve => {
@@ -340,19 +340,22 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
               if (clientError.code === 'ECONNREFUSED') {
                 // No other server listening on this socket so it can be safely removed
                 fs.unlinkSync(options.socket);
-                this.server!.listen(options.socket, options.host, err => {
+                this.server!.listen(options.socket as any, options.host as any, err => {
                   if (err) {
                     throw err;
                   }
                 });
               }
             });
-            clientSocket.connect({ path: options.socket }, () => {
-              throw new Error('This socket is already used');
-            });
+            clientSocket.connect(
+              { path: options.socket },
+              () => {
+                throw new Error('This socket is already used');
+              },
+            );
           }
         });
-        this.server.listen(options.socket, options.host, err => {
+        this.server.listen(options.socket as any, options.host as any, err => {
           if (err) {
             throw err;
           }
@@ -367,7 +370,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           });
         });
       } else {
-        this.server.listen(options.port, options.host, err => {
+        this.server.listen(options.port as any, options.host as any, err => {
           if (err) {
             throw err;
           }

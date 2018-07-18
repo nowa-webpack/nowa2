@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.6.0...@nowa/core@0.7.0) (2018-07-18)
+
+
+### Bug Fixes
+
+* command path parsing issue ([31783c1](https://github.com/nowa-webpack/nowa2/commit/31783c1))
+* module loading error is not handled correctly ([ec874a9](https://github.com/nowa-webpack/nowa2/commit/ec874a9))
+* parse issues ([d63daf2](https://github.com/nowa-webpack/nowa2/commit/d63daf2))
+
+
+### Features
+
+* support new command description format ([10ca293](https://github.com/nowa-webpack/nowa2/commit/10ca293))
+* support path-like command description ([50e46e6](https://github.com/nowa-webpack/nowa2/commit/50e46e6))
+
+
+
+
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.5.0...@nowa/core@0.6.0) (2018-05-27)
 
