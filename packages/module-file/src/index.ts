@@ -1,7 +1,7 @@
 import { basename, dirname, resolve } from 'path';
 
 import { Module } from '@nowa/core';
-import { copy, emptyDir, ensureDir, move, remove } from 'fs-extra';
+import { copy, emptyDir, ensureDir, move, remove, stat } from 'fs-extra';
 import * as globby from 'globby';
 import * as isGlob from 'is-glob';
 
@@ -55,13 +55,13 @@ export default class ModuleFile extends Module.Async<ModuleFile.Config> {
         case 'move':
         case 'copy': {
           const target = resolve(context, action.to);
-          const isDir = action.to.endsWith('/');
-          if (!isDir && files.length > 1) {
+          const targetIsDir = action.to.endsWith('/');
+          if (!targetIsDir && files.length > 1) {
             logger.error(`in`, action);
             logger.error(`${action.type} multiple files to a single file is not valid`);
             throw new Error(`${action.type} multiple to single file`);
           }
-          if (isDir) {
+          if (targetIsDir) {
             await ensureDir(target);
           } else {
             await ensureDir(dirname(target));
@@ -69,16 +69,20 @@ export default class ModuleFile extends Module.Async<ModuleFile.Config> {
           if (action.type === 'copy') {
             await Promise.all(
               files.map(file => {
-                const dest = isDir ? resolve(target, basename(file)) : target;
-                logger.debug(`copy ${file} to ${dest}`);
-                return copy(file, dest, { overwrite: true });
+                return stat(file) // FIXME: file & directory
+                  .then(stat => stat.isDirectory())
+                  .then(sourceIsDir => {
+                    const dest = targetIsDir ? (sourceIsDir ? target : resolve(target, basename(file))) : target;
+                    logger.debug(`copy ${file} to ${dest}`);
+                    return copy(file, dest, { overwrite: true });
+                  });
               }),
             );
             logger.info(`copied ${files.length} file(s) / folder(s)`);
           } else if (action.type === 'move') {
             await Promise.all(
               files.map(file => {
-                const dest = isDir ? resolve(target, basename(file)) : target;
+                const dest = targetIsDir ? resolve(target, basename(file)) : target;
                 logger.debug(`copy ${file} to ${dest}`);
                 return move(file, dest, { overwrite: true });
               }),
