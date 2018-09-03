@@ -10,6 +10,7 @@ import * as semver from 'semver';
 
 import { run } from '../index';
 import logo from '../lib/logo/small';
+import { SolutionConfiguration } from '../lib/SolutionConfiguration';
 const isDebug = !!process.env.NOWA_DEBUG;
 
 if (isDebug || !importLocal(__filename)) {
@@ -21,7 +22,8 @@ if (isDebug || !importLocal(__filename)) {
     console.log(chalk`{red Nowa needs node @ {bold 6.5+} but found ${nodeVersion}\nPlease upgrade your environment}`);
     process.exit(1);
   }
-  console.log(`\n${logo(coreVersion, cliVersion)}`);
+  const solution = new SolutionConfiguration(resolve(process.cwd(), 'nowa.config.js'));
+  console.log(`\n${logo(coreVersion, cliVersion, solution.toJS())}`);
   isElevated().then(e => {
     if (e) {
       console.log(
