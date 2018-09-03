@@ -210,11 +210,18 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       }
       return msg;
     }
-    function reportReadiness(uri: string, options: any) {
+    function reportReadiness(options: any, listeningApp: any, suffix: string) {
+      const protocol = options.https ? 'https:' : 'http:';
+      const localhostURI = `${protocol}//localhost:8080${suffix}`;
       const useColor = isSupportColor;
       const contentBase = Array.isArray(options.contentBase) ? options.contentBase.join(', ') : options.contentBase;
       if (!options.quiet) {
-        let startSentence = `Project is running at ${colorInfo(useColor, uri)}`;
+        let startSentence = options.useLocalIp
+          ? `Project is running at ${colorInfo(useColor, localhostURI)}. Also, access outside at ${colorInfo(
+              useColor,
+              createDomain(options, listeningApp) + suffix,
+            )}`
+          : `Project is running at ${colorInfo(useColor, localhostURI)}`;
         if (options.socket) {
           startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
         }
@@ -237,7 +244,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           openOptions = { app: options.open };
           openMessage += `: ${options.open}`;
         }
-        open(uri + (options.openPage || ''), openOptions).catch(() => {
+        open(localhostURI + (options.openPage || ''), openOptions).catch(() => {
           console.log(`${openMessage}. If you are running in a headless environment, please do not use the open flag.`);
         });
       }
@@ -365,8 +372,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
             if (fsError) {
               throw fsError;
             }
-            const uri = createDomain(options, (this.server as any).listeningApp) + suffix;
-            reportReadiness(uri, options);
+            reportReadiness(options, (this.server as any).listeningApp, suffix);
           });
         });
       } else {
@@ -377,8 +383,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           if (options.bonjour) {
             broadcastZeroconf(options);
           }
-          const uri = createDomain(options, (this.server as any).listeningApp) + suffix;
-          reportReadiness(uri, options);
+          reportReadiness(options, (this.server as any).listeningApp, suffix);
         });
       }
       await donePromise;
