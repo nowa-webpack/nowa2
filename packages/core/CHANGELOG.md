@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.1...@nowa/core@0.7.2) (2018-09-04)
+
+
+### Features
+
+* solution log level from info to debug ([5b75d74](https://github.com/nowa-webpack/nowa2/commit/5b75d74))
+
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.0...@nowa/core@0.7.1) (2018-07-18)
 
