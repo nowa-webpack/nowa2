@@ -1,6 +1,6 @@
-import { resolve } from 'path';
-
 import { Module, utils } from '@nowa/core';
+import { AddressInfo, Server } from 'net';
+import { resolve } from 'path';
 import * as supportsColor from 'supports-color';
 import * as Webpack from 'webpack';
 import * as WebpackDevServer from 'webpack-dev-server';
@@ -210,18 +210,29 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       }
       return msg;
     }
-    function reportReadiness(options: any, listeningApp: any, suffix: string) {
+    function reportReadiness(options: any, listeningApp: Server, suffix: string) {
+      const { address, family, port } = listeningApp.address() as AddressInfo;
+      if (family !== 'IPv4') {
+        console.warn(`[Network] Using family ${family}`);
+      }
       const protocol = options.https ? 'https:' : 'http:';
-      const localhostURI = `${protocol}//localhost:8080${suffix}`;
+      const localhostURI = `${protocol}//localhost:${port}${suffix}`;
       const useColor = isSupportColor;
       const contentBase = Array.isArray(options.contentBase) ? options.contentBase.join(', ') : options.contentBase;
       if (!options.quiet) {
-        let startSentence = options.useLocalIp
-          ? `Project is running at ${colorInfo(useColor, localhostURI)}. Also, access outside at ${colorInfo(
-              useColor,
-              createDomain(options, listeningApp) + suffix,
-            )}`
-          : `Project is running at ${colorInfo(useColor, localhostURI)}`;
+        let startSentence =
+          address === '127.0.0.1' // 当 host 设置为 127.0.0.1 和 localhost，都为 127.0.0.1
+            ? `Project is running at ${colorInfo(useColor, localhostURI)}`
+            : `Project is running at ${colorInfo(useColor, localhostURI)}. Also, access outside at ${colorInfo(
+                useColor,
+                createDomain(
+                  {
+                    ...options,
+                    useLocalIp: true,
+                  },
+                  listeningApp,
+                ) + suffix,
+              )}`;
         if (options.socket) {
           startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
         }

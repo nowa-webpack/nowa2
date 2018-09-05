@@ -2,6 +2,7 @@ node_modules/
 *.log
 .nyc_output
 .vscode/
+.idea
 .DS_Store
 .nyc
 coverage/
