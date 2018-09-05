@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.1...@nowa/module-webpack@0.7.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* the issue of opening the localhost url ([ce4f11d](https://github.com/nowa-webpack/nowa2/commit/ce4f11d))
+
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.0...@nowa/module-webpack@0.7.1) (2018-09-04)
 
