@@ -41,10 +41,10 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       }
     }
     if (typeof overwriteConfig === 'function') {
-      logger.info(`overwrite configs from ${overwriteConfigPath}`);
+      logger.warn(`overwrite configs from ${overwriteConfigPath}`);
       finalConfigs = await finalConfigs.map(config => overwriteConfig(config, this.$runtime, Webpack));
     }
-    logger.info(`got ${finalConfigs.length} webpack configs`);
+    logger.debug(`got ${finalConfigs.length} webpack configs`);
     logger.debug(finalConfigs);
     this.config = finalConfigs.length === 1 ? finalConfigs[0] : finalConfigs;
     this.firstConfig = finalConfigs[0];
@@ -187,6 +187,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   }
 
   private async _initWebpackDevServer(): Promise<void> {
+    const { logger } = this.$utils;
     // from webpack-dev-server
     // https://github.com/webpack/webpack-dev-server/blob/master/bin/webpack-dev-server.js
     // 2.11.1
@@ -222,8 +223,8 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       if (!options.quiet) {
         let startSentence =
           address === '127.0.0.1' // 当 host 设置为 127.0.0.1 和 localhost，都为 127.0.0.1
-            ? `Project is running at ${colorInfo(useColor, localhostURI)}`
-            : `Project is running at ${colorInfo(useColor, localhostURI)}. Also, access outside at ${colorInfo(
+            ? `Project is running at\n\t- ${colorInfo(useColor, localhostURI)}`
+            : `Project is running at\n\t- ${colorInfo(useColor, localhostURI)}\n\t- ${colorInfo(
                 useColor,
                 createDomain(
                   {
@@ -236,16 +237,16 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
         if (options.socket) {
           startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
         }
-        console.log((options.progress ? '\n' : '') + startSentence);
-        console.log(`webpack output is served from ${colorInfo(useColor, options.publicPath)}`);
+        logger.info((options.progress ? '\n' : '') + startSentence);
+        logger.debug(`webpack output is served from ${colorInfo(useColor, options.publicPath)}`);
         if (contentBase) {
-          console.log(`Content not from webpack is served from ${colorInfo(useColor, contentBase)}`);
+          logger.debug(`Content not from webpack is served from ${colorInfo(useColor, contentBase)}`);
         }
         if (options.historyApiFallback) {
-          console.log(`404s will fallback to ${colorInfo(useColor, options.historyApiFallback.index || '/index.html')}`);
+          logger.debug(`404s will fallback to ${colorInfo(useColor, options.historyApiFallback.index || '/index.html')}`);
         }
         if (options.bonjour) {
-          console.log('Broadcasting "http" with subtype of "webpack" via ZeroConf DNS (Bonjour)');
+          logger.debug('Broadcasting "http" with subtype of "webpack" via ZeroConf DNS (Bonjour)');
         }
       }
       if (options.open) {
@@ -256,7 +257,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           openMessage += `: ${options.open}`;
         }
         open(localhostURI + (options.openPage || ''), openOptions).catch(() => {
-          console.log(`${openMessage}. If you are running in a headless environment, please do not use the open flag.`);
+          logger.info(`${openMessage}. If you are running in a headless environment, please do not use the open flag.`);
         });
       }
     }
