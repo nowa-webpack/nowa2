@@ -223,8 +223,8 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       if (!options.quiet) {
         let startSentence =
           address === '127.0.0.1' // 当 host 设置为 127.0.0.1 和 localhost，都为 127.0.0.1
-            ? `Project is running at\n\t- ${colorInfo(useColor, localhostURI)}`
-            : `Project is running at\n\t- ${colorInfo(useColor, localhostURI)}\n\t- ${colorInfo(
+            ? `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n`
+            : `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n\t- ${colorInfo(
                 useColor,
                 createDomain(
                   {
@@ -233,7 +233,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
                   },
                   listeningApp,
                 ) + suffix,
-              )}`;
+              )}\n`;
         if (options.socket) {
           startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
         }
