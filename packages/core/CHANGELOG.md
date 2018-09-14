@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.2...@nowa/core@0.7.3) (2018-09-14)
+
+
+### Bug Fixes
+
+* forgot to register load-advanced plugin ([21a556a](https://github.com/nowa-webpack/nowa2/commit/21a556a))
+* logo issue ([498e76e](https://github.com/nowa-webpack/nowa2/commit/498e76e))
+
+
+### Features
+
+* support loading advanced config & solution ([29048b3](https://github.com/nowa-webpack/nowa2/commit/29048b3))
+
+
+
+
+<a name="0.8.0-beta.498e76e6"></a>
+# [0.8.0-beta.498e76e6](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.2...@nowa/core@0.8.0-beta.498e76e6) (2018-09-14)
+
+
+### Bug Fixes
+
+* forgot to register load-advanced plugin ([21a556a](https://github.com/nowa-webpack/nowa2/commit/21a556a))
+* logo issue ([498e76e](https://github.com/nowa-webpack/nowa2/commit/498e76e))
+
+
+### Features
+
+* support loading advanced config & solution ([29048b3](https://github.com/nowa-webpack/nowa2/commit/29048b3))
+
+
+
+
+<a name="0.8.0-beta.498e76e6"></a>
+# [0.8.0-beta.498e76e6](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.2...@nowa/core@0.8.0-beta.498e76e6) (2018-09-14)
+
+
+### Bug Fixes
+
+* forgot to register load-advanced plugin ([21a556a](https://github.com/nowa-webpack/nowa2/commit/21a556a))
+* logo issue ([498e76e](https://github.com/nowa-webpack/nowa2/commit/498e76e))
+
+
+### Features
+
+* support loading advanced config & solution ([29048b3](https://github.com/nowa-webpack/nowa2/commit/29048b3))
+
+
+
+
+<a name="0.8.0-beta.21a556ab"></a>
+# [0.8.0-beta.21a556ab](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.2...@nowa/core@0.8.0-beta.21a556ab) (2018-09-14)
+
+
+### Bug Fixes
+
+* forgot to register load-advanced plugin ([21a556a](https://github.com/nowa-webpack/nowa2/commit/21a556a))
+
+
+### Features
+
+* support loading advanced config & solution ([29048b3](https://github.com/nowa-webpack/nowa2/commit/29048b3))
+
+
+
+
+<a name="0.8.0-beta.29048b3e"></a>
+# [0.8.0-beta.29048b3e](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.2...@nowa/core@0.8.0-beta.29048b3e) (2018-09-14)
+
+
+### Features
+
+* support loading advanced config & solution ([29048b3](https://github.com/nowa-webpack/nowa2/commit/29048b3))
+
+
+
+
 <a name="0.7.2"></a>
 ## [0.7.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.1...@nowa/core@0.7.2) (2018-09-04)
 

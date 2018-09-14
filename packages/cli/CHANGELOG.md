@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.6.3"></a>
+## [0.6.3](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.6.2...@nowa/cli@0.6.3) (2018-09-14)
+
+
+### Bug Fixes
+
+* logo issue ([498e76e](https://github.com/nowa-webpack/nowa2/commit/498e76e))
+
+
+
+
+<a name="0.7.0-beta.498e76e6"></a>
+# [0.7.0-beta.498e76e6](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.6.2...@nowa/cli@0.7.0-beta.498e76e6) (2018-09-14)
+
+
+### Bug Fixes
+
+* logo issue ([498e76e](https://github.com/nowa-webpack/nowa2/commit/498e76e))
+
+
+
+
 <a name="0.6.2"></a>
 ## [0.6.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.6.1...@nowa/cli@0.6.2) (2018-09-04)
 
