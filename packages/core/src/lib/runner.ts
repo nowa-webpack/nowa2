@@ -18,6 +18,19 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
       await this.$applyHook('init-start');
       logger.debug('apply init-context');
       this.runtime.context = await this.$applyHookBail('init-context');
+      logger.debug('apply load-advanced-config');
+      const advanced = await this.$applyHookBail('load-advanced', { context: this.runtime.context });
+      if (advanced) {
+        const advancedPlugins = await this.$applyHookBail('load-plugins', {
+          config: advanced.config,
+          context: this.runtime.context,
+          solution: advanced.solution,
+        });
+        logger.debug(`load ${advancedPlugins.length} advanced plugin(s)`);
+        for (const plugin of advancedPlugins) {
+          await plugin.apply(this, this.$createUtils(plugin.name));
+        }
+      }
       logger.debug('apply load-config');
       this.runtime.raw.config = await this.$applyHookBail('load-config', { context: this.runtime.context });
       logger.debug('apply load-solution');
@@ -135,9 +148,13 @@ export namespace Runner {
   export type PluginGroup = {
     'init-start': [undefined, void];
     'init-context': [undefined, IRuntime['context']];
+    'load-advanced': [
+      Pick<IRuntime, 'context'>,
+      { config: IRuntime['raw']['config']; solution: IRuntime['raw']['solution'] } | null
+    ];
     'load-config': [Pick<IRuntime, 'context'>, IRuntime['raw']['config']];
     'load-solution': [Pick<IRuntime, 'context'> & Pick<IRuntime['raw'], 'config'>, IRuntime['raw']['solution']];
-    'load-plugins': [Pick<IRuntime, 'context'> & Pick<IRuntime['raw'], 'config' | 'solution'>, Array<IPlugin<Runner>>];
+    'load-plugins': [Pick<IRuntime, 'context'> & Partial<Pick<IRuntime['raw'], 'config' | 'solution'>>, Array<IPlugin<Runner>>];
     'load-commands': [Pick<IRuntime, 'context'> & Pick<IRuntime['raw'], 'config' | 'solution'>, IRuntime['raw']['commands']];
     'parse-config': [Pick<IRuntime, 'context'> & IRuntime['raw'], IRuntime['parsed']['config']];
     'parse-solution': [Pick<IRuntime, 'context'> & IRuntime['raw'], IRuntime['parsed']['solution']];

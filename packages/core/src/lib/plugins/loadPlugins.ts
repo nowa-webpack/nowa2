@@ -1,9 +1,10 @@
 import { Runner } from '../runner';
-import { IPlugin } from '../types';
+import { IConfig, IPlugin, ISolution } from '../types';
 
 export class LoadPluginsPlugin {
   public apply(runner: Runner, { logger }: Runner.Utils) {
-    runner.$register('load-plugins', async ({ config, solution }) => {
+    // tslint:disable-next-line: no-object-literal-type-assertion
+    runner.$register('load-plugins', async ({ config = {} as Partial<ISolution>, solution = {} as Partial<IConfig> }) => {
       const allPlugins = [...((solution.nowa && solution.nowa.plugins) || []), ...((config.nowa && config.nowa.plugins) || [])];
       logger.debug(`got ${allPlugins.length} plugin(s) to load`);
       return allPlugins.map(p => {
