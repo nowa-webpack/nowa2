@@ -23,7 +23,7 @@ export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Ar
 
 export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<Types.IPlugin<Runner>>) => {
   const allPlugins = [
-`    new InitErrorPlugin(),
+    new InitErrorPlugin(),
     new LoadAdvancedPlugin(),
     new LoadConfigPlugin(),
     new LoadModulesPlugin(),
@@ -31,7 +31,7 @@ export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plug
     new LoadSolutionPlugin(),
     new ParseConfigPlugin(),
     new ParseSolutionPlugin(),
-    new RunErrorPlugin(),`
+    new RunErrorPlugin(),
     ...plugins,
   ];
   return createRunner(createUtils, allPlugins);
