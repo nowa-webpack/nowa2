@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.6.4"></a>
+## [0.6.4](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.6.3...@nowa/cli@0.6.4) (2018-09-14)
+
+
+### Bug Fixes
+
+* chalk error ([eb4939b](https://github.com/nowa-webpack/nowa2/commit/eb4939b))
+
+
+
+
 <a name="0.6.3"></a>
 ## [0.6.3](https://github.com/nowa-webpack/nowa2/compare/@nowa/cli@0.6.2...@nowa/cli@0.6.3) (2018-09-14)
 
