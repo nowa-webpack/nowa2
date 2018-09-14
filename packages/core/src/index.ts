@@ -4,6 +4,7 @@ import * as Types from './lib/types';
 import * as utils from './lib/utils';
 
 import { InitErrorPlugin } from './lib/plugins/initError';
+import { LoadAdvancedPlugin } from './lib/plugins/loadAdvanced';
 import { LoadConfigPlugin } from './lib/plugins/loadConfig';
 import { LoadModulesPlugin } from './lib/plugins/loadModules';
 import { LoadPluginsPlugin } from './lib/plugins/loadPlugins';
@@ -22,14 +23,15 @@ export const createRunner = async (createUtils: Runner.UtilsCreator, plugins: Ar
 
 export const createDefaultRunner = async (createUtils: Runner.UtilsCreator, plugins: Array<Types.IPlugin<Runner>>) => {
   const allPlugins = [
-    new InitErrorPlugin(),
+`    new InitErrorPlugin(),
+    new LoadAdvancedPlugin(),
     new LoadConfigPlugin(),
     new LoadModulesPlugin(),
     new LoadPluginsPlugin(),
     new LoadSolutionPlugin(),
     new ParseConfigPlugin(),
     new ParseSolutionPlugin(),
-    new RunErrorPlugin(),
+    new RunErrorPlugin(),`
     ...plugins,
   ];
   return createRunner(createUtils, allPlugins);
