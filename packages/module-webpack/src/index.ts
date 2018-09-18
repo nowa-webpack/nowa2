@@ -195,7 +195,12 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     const net = require('net');
     const open = require('opn'); // tslint:disable-line
     const portfinder = require('portfinder'); // tslint:disable-line
-    const addDevServerEntrypoints = require('webpack-dev-server/lib/util/addDevServerEntrypoints'); // tslint:disable-line
+    let addDevServerEntrypoints: any;
+    try {
+      addDevServerEntrypoints = require('webpack-dev-server/lib/util/addDevServerEntrypoints'); // tslint:disable-line
+    } catch (e) {
+      addDevServerEntrypoints = require('webpack-dev-server/lib/util/addEntries'); // tslint:disable-line
+    }
     const createDomain = require('webpack-dev-server/lib/util/createDomain'); // tslint:disable-line
     function colorInfo(useColor: boolean, msg: string) {
       if (useColor) {
