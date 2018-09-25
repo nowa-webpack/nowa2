@@ -223,7 +223,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
         console.warn(`[Network] Using family ${family}`);
       }
       const protocol = options.https ? 'https:' : 'http:';
-      const localhostURI = `${protocol}//localhost:${port}${suffix}`;
+      const localhostURI = `${protocol}//127.0.0.1:${port}${suffix}`;
       const useColor = isSupportColor;
       const contentBase = Array.isArray(options.contentBase) ? options.contentBase.join(', ') : options.contentBase;
       if (!options.quiet) {
