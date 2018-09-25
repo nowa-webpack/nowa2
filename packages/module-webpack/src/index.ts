@@ -19,6 +19,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   public config?: Webpack.Configuration | Webpack.Configuration[];
   public firstConfig?: Webpack.Configuration;
   public alreadyRun = false;
+  public alreadyOpen = false;
 
   public async init() {
     const { logger } = this.$utils;
@@ -336,6 +337,10 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       }
       const donePromise = new Promise(resolve => {
         this.compiler!.plugin('done', () => {
+          if (!this.alreadyOpen) {
+            reportReadiness(options, (this.server as any).listeningApp, suffix);
+            this.alreadyOpen = true;
+          }
           done();
           resolve();
         });
@@ -389,7 +394,6 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
             if (fsError) {
               throw fsError;
             }
-            reportReadiness(options, (this.server as any).listeningApp, suffix);
           });
         });
       } else {
@@ -400,7 +404,6 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           if (options.bonjour) {
             broadcastZeroconf(options);
           }
-          reportReadiness(options, (this.server as any).listeningApp, suffix);
         });
       }
       await donePromise;
