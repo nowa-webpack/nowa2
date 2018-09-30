@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.2...@nowa/module-webpack@0.7.3) (2018-09-30)
+
+
+### Bug Fixes
+
+* open 127.0.0.1 instead of localhost ([142a2ac](https://github.com/nowa-webpack/nowa2/commit/142a2ac))
+
+
+### Features
+
+* optimize webpack output ([b2f409f](https://github.com/nowa-webpack/nowa2/commit/b2f409f))
+* reportReadiness after webpack finishing compiling ([1d9eb24](https://github.com/nowa-webpack/nowa2/commit/1d9eb24))
+* support webpack-dev-server@3.1.6+ ([6309a20](https://github.com/nowa-webpack/nowa2/commit/6309a20))
+
+
+
+
 <a name="0.7.2"></a>
 ## [0.7.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.1...@nowa/module-webpack@0.7.2) (2018-09-05)
 
