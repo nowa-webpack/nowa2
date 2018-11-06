@@ -335,16 +335,17 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       if ((options as any).progress) {
         this.compiler!.apply(new Webpack.ProgressPlugin());
       }
-      const donePromise = new Promise(resolve => {
-        this.compiler!.plugin('done', () => {
-          if (!this.alreadyOpen) {
-            reportReadiness(options, (this.server as any).listeningApp, suffix);
-            this.alreadyOpen = true;
-          }
-          done();
-          resolve();
-        });
+
+      // 监听 webpack 事件
+      this.compiler!.hooks.done.tapAsync('@nowa/module-webpack', (_, callback) => {
+        if (!this.alreadyOpen) {
+          reportReadiness(options, (this.server as any).listeningApp, suffix);
+          this.alreadyOpen = true;
+        }
+        done();
+        callback();
       });
+
       const suffix = options.inline !== false || options.lazy === true ? '/' : '/webpack-dev-server/';
       try {
         this.server = new WebpackDevServer(this.compiler!, options);
@@ -406,7 +407,6 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           }
         });
       }
-      await donePromise;
     };
   }
 }
