@@ -34,7 +34,7 @@ export class LoadSolutionPlugin {
       if (isModule) {
         logger.debug(`solution path ${require.resolve(solutionPath)}`);
         const { version } = require(`${solutionPath}/package.json`);
-        version && logger.debug(`solution version ${version}`);
+        version && logger.info(`Using ${solution}@${version}`);
       }
       try {
         return handleESModuleDefault(require(solutionPath));
