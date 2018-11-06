@@ -83,7 +83,7 @@ export class Runner extends Runnable.Callback<Runner.PluginGroup> {
       this.runtime.parsed.options = new Proxy(options, {
         get(t, p) {
           if (!t.hasOwnProperty(p)) {
-            logOptionsWarning('used a non-exist options property');
+            logOptionsWarning(`used a non-exist options property ${String(p)}`);
           }
           return (t as any)[p];
         },
@@ -148,10 +148,7 @@ export namespace Runner {
   export type PluginGroup = {
     'init-start': [undefined, void];
     'init-context': [undefined, IRuntime['context']];
-    'load-advanced': [
-      Pick<IRuntime, 'context'>,
-      { config: IRuntime['raw']['config']; solution: IRuntime['raw']['solution'] } | null
-    ];
+    'load-advanced': [Pick<IRuntime, 'context'>, { config: IRuntime['raw']['config']; solution: IRuntime['raw']['solution'] } | null];
     'load-config': [Pick<IRuntime, 'context'>, IRuntime['raw']['config']];
     'load-solution': [Pick<IRuntime, 'context'> & Pick<IRuntime['raw'], 'config'>, IRuntime['raw']['solution']];
     'load-plugins': [Pick<IRuntime, 'context'> & Partial<Pick<IRuntime['raw'], 'config' | 'solution'>>, Array<IPlugin<Runner>>];
