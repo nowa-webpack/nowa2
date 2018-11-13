@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.4"></a>
+## [0.7.4](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.3...@nowa/core@0.7.4) (2018-11-13)
+
+
+### Features
+
+* ouput the non-exist options property ([0ac9e33](https://github.com/nowa-webpack/nowa2/commit/0ac9e33))
+* output the solution name and version ([5049eef](https://github.com/nowa-webpack/nowa2/commit/5049eef))
+
+
+
+
 <a name="0.7.3"></a>
 ## [0.7.3](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.2...@nowa/core@0.7.3) (2018-09-14)
 

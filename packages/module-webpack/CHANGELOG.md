@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.4"></a>
+## [0.7.4](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.3...@nowa/module-webpack@0.7.4) (2018-11-13)
+
+
+### Bug Fixes
+
+* replace .plugin with .hooks ([0ba76ac](https://github.com/nowa-webpack/nowa2/commit/0ba76ac))
+* support webpack-dev-server 3.1.10 ([c019cb0](https://github.com/nowa-webpack/nowa2/commit/c019cb0))
+
+
+
+
 <a name="0.7.3"></a>
 ## [0.7.3](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.2...@nowa/module-webpack@0.7.3) (2018-09-30)
 
