@@ -222,19 +222,30 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       const useColor = isSupportColor;
       const contentBase = Array.isArray(options.contentBase) ? options.contentBase.join(', ') : options.contentBase;
       if (!options.quiet) {
-        let startSentence =
-          address === '127.0.0.1' // 当 host 设置为 127.0.0.1 和 localhost，都为 127.0.0.1
-            ? `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n`
-            : `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n\t- ${colorInfo(
-                useColor,
-                createDomain(
-                  {
-                    ...options,
-                    useLocalIp: true,
-                  },
-                  listeningApp,
-                ) + suffix,
-              )}\n`;
+        /**
+         * 预览地址
+         * - 设置环境变量 PREVIEW_URL，则按照其设置值显示
+         * - 没有设置，则使用 127.0.0.1 和 LocalIP
+         */
+        let startSentence;
+        if (process.env.PREVIEW_URL) {
+          startSentence = `Project is running at\n\n\t- ${colorInfo(useColor, process.env.PREVIEW_URL)}\n`;
+        } else {
+          startSentence =
+            address === '127.0.0.1' // 当 host 设置为 127.0.0.1 和 localhost，都为 127.0.0.1
+              ? `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n`
+              : `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n\t- ${colorInfo(
+                  useColor,
+                  createDomain(
+                    {
+                      ...options,
+                      useLocalIp: true,
+                    },
+                    listeningApp,
+                  ) + suffix,
+                )}\n`;
+        }
+
         if (options.socket) {
           startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
         }
