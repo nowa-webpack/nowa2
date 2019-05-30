@@ -8,10 +8,8 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage",
-    "publish": "lerna run build && lerna publish",
-    "link": "lerna exec yarn link",
-    "unlink": "lerna exec yarn unlink",
-    "precommit": "lint-staged"
+    "ver": "lerna version",
+    "pub": "lerna publish from-git"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.6",
