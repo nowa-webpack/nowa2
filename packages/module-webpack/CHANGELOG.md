@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.7.6"></a>
+## [0.7.6](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.5...@nowa/module-webpack@0.7.6) (2019-05-30)
+
+
+### Features
+
+* **webpack:** 增加 PREVIEW_URL 配置 ([61e3607](https://github.com/nowa-webpack/nowa2/commit/61e3607)), closes [#12](https://github.com/nowa-webpack/nowa2/issues/12)
+
+
+
+
+
 <a name="0.7.5"></a>
 ## [0.7.5](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.4...@nowa/module-webpack@0.7.5) (2018-11-13)
 

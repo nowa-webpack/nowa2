@@ -1,6 +1,6 @@
 {
   "name": "@nowa/module-webpack",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "the nowa webpack module",
   "scripts": {
     "clean": "rm -f ./index.*",
