@@ -1,5 +1,4 @@
 import { Module, utils } from '@nowa/core';
-import { AddressInfo, Server } from 'net';
 import { resolve } from 'path';
 import * as supportsColor from 'supports-color';
 import * as Webpack from 'webpack';
@@ -188,201 +187,67 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   }
 
   private async _initWebpackDevServer(): Promise<void> {
-    const { logger } = this.$utils;
     // from webpack-dev-server
     // https://github.com/webpack/webpack-dev-server/blob/master/bin/webpack-dev-server.js
-    // 2.11.1
+    // 3.7.1
     const fs = require('fs');
     const net = require('net');
-    const open = require('opn'); // tslint:disable-line
-    const portfinder = require('portfinder'); // tslint:disable-line
-    const addDevServerEntrypoints = require('webpack-dev-server/lib/utils/addEntries'); // tslint:disable-line
-    const createDomain = require('webpack-dev-server/lib/utils/createDomain'); // tslint:disable-line
-    function colorInfo(useColor: boolean, msg: string) {
-      if (useColor) {
-        // Make text blue and bold, so it *pops*
-        return `\u001b[1m\u001b[34m${msg}\u001b[39m\u001b[22m`;
-      }
-      return msg;
-    }
-    function colorError(useColor: boolean, msg: string) {
-      if (useColor) {
-        // Make text red and bold, so it *pops*
-        return `\u001b[1m\u001b[31m${msg}\u001b[39m\u001b[22m`;
-      }
-      return msg;
-    }
-    function reportReadiness(options: any, listeningApp: Server, suffix: string) {
-      const { address, family, port } = listeningApp.address() as AddressInfo;
-      if (family !== 'IPv4') {
-        console.warn(`[Network] Using family ${family}`);
-      }
-      const protocol = options.https ? 'https:' : 'http:';
-      const localhostURI = `${protocol}//127.0.0.1:${port}${suffix}`;
-      const useColor = isSupportColor;
-      const contentBase = Array.isArray(options.contentBase) ? options.contentBase.join(', ') : options.contentBase;
-      if (!options.quiet) {
-        /**
-         * 预览地址
-         * - 设置环境变量 PREVIEW_URL，则按照其设置值显示
-         * - 没有设置，则使用 127.0.0.1 和 LocalIP
-         */
-        let startSentence;
-        if (process.env.PREVIEW_URL) {
-          startSentence = `Project is running at\n\n\t- ${colorInfo(useColor, process.env.PREVIEW_URL)}\n`;
-        } else {
-          startSentence =
-            address === '127.0.0.1' // 当 host 设置为 127.0.0.1 和 localhost，都为 127.0.0.1
-              ? `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n`
-              : `Project is running at\n\n\t- ${colorInfo(useColor, localhostURI)}\n\t- ${colorInfo(
-                  useColor,
-                  createDomain(
-                    {
-                      ...options,
-                      useLocalIp: true,
-                    },
-                    listeningApp,
-                  ) + suffix,
-                )}\n`;
-        }
+    const webpack = require('webpack');
+    const Server = require('webpack-dev-server');
+    const setupExitSignals = require('webpack-dev-server/lib/utils/setupExitSignals');
+    const colors = require('webpack-dev-server/lib/utils/colors');
+    const createLogger = require('webpack-dev-server/lib/utils/createLogger');
+    const findPort = require('webpack-dev-server/lib/utils/findPort');
 
-        if (options.socket) {
-          startSentence = `Listening to socket at ${colorInfo(useColor, options.socket)}`;
-        }
-        logger.info((options.progress ? '\n' : '') + startSentence);
-        logger.debug(`webpack output is served from ${colorInfo(useColor, options.publicPath)}`);
-        if (contentBase) {
-          logger.debug(`Content not from webpack is served from ${colorInfo(useColor, contentBase)}`);
-        }
-        if (options.historyApiFallback) {
-          logger.debug(`404s will fallback to ${colorInfo(useColor, options.historyApiFallback.index || '/index.html')}`);
-        }
-        if (options.bonjour) {
-          logger.debug('Broadcasting "http" with subtype of "webpack" via ZeroConf DNS (Bonjour)');
-        }
-      }
-      if (options.open) {
-        let openOptions = {};
-        let openMessage = 'Unable to open browser';
-        if (typeof options.open === 'string') {
-          openOptions = { app: options.open };
-          openMessage += `: ${options.open}`;
-        }
-        open(localhostURI + (options.openPage || ''), openOptions).catch(() => {
-          logger.info(`${openMessage}. If you are running in a headless environment, please do not use the open flag.`);
-        });
-      }
-    }
+    let server: any;
 
-    function broadcastZeroconf(options: any) {
-      const bonjour = require('bonjour')(); // tslint:disable-line
-      bonjour.publish({
-        name: 'Webpack Dev Server',
-        port: options.port,
-        subtypes: ['webpack'],
-        type: 'http',
-      });
-      process.on('exit', () => {
-        bonjour.unpublishAll(() => {
-          bonjour.destroy();
-        });
-      });
-    }
-    const DEFAULT_PORT = 8080;
-    const webpackOptions = this.config!;
-    const options = this.firstConfig!.devServer || {};
-    if (!options.publicPath) {
-      // eslint-disable-next-line
-      options.publicPath = (this.firstConfig!.output && this.firstConfig!.output!.publicPath) || '';
-      if (!/^(https?:)?\/\//.test(options.publicPath) && options.publicPath[0] !== '/') {
-        options.publicPath = `/${options.publicPath}`;
-      }
-    }
-    if (!options.filename) {
-      options.filename = this.firstConfig!.output && this.firstConfig!.output!.filename;
-    }
-    if (!options.watchOptions) {
-      options.watchOptions = this.firstConfig!.watchOptions;
-    }
-    if (!options.stats) {
-      (options.stats as any) = {
-        cached: false,
-        cachedAssets: false,
-      };
-    }
-    if (typeof options.stats === 'object' && typeof (options.stats as any).colors === 'undefined') {
-      (options.stats as any) = { ...options.stats, colors: isSupportColor };
-    }
-    if (options.open && !options.openPage) {
-      options.openPage = '';
-    }
-    if (!options.port) {
-      await new Promise(resolve => {
-        portfinder.basePort = DEFAULT_PORT;
-        portfinder.getPort((err: any, port: number) => {
-          if (err) {
-            throw err;
-          }
-          options.port = port;
-          resolve();
-        });
-      });
-    }
-    // defaults from yargs
-    if (options.inline == null) {
-      options.inline = true;
-    }
-    if (options.host == null) {
-      options.host = 'localhost';
-    }
-    this.startDevServer = async (done: () => void) => {
-      addDevServerEntrypoints(webpackOptions, options);
-      await this._initWebpack();
-      if ((options as any).progress) {
-        this.compiler!.apply(new Webpack.ProgressPlugin());
-      }
+    setupExitSignals(server);
 
-      // 监听 webpack 事件
-      this.compiler!.hooks.done.tapAsync('@nowa/module-webpack', (_, callback) => {
-        if (!this.alreadyOpen) {
-          reportReadiness(options, (this.server as any).listeningApp, suffix);
-          this.alreadyOpen = true;
-        }
-        done();
-        callback();
-      });
+    function startDevServer(config: Webpack.Configuration | Webpack.Configuration[], options: WebpackDevServer.Configuration) {
+      const log = createLogger(options);
 
-      const suffix = options.inline !== false || options.lazy === true ? '/' : '/webpack-dev-server/';
+      let compiler;
+
       try {
-        this.server = new WebpackDevServer(this.compiler!, options);
-      } catch (e) {
-        if (e.name === 'WebpackDevServerOptionsValidationError') {
-          console.error(colorError(isSupportColor, e.message));
+        compiler = webpack(config);
+      } catch (err) {
+        if (err instanceof webpack.WebpackOptionsValidationError) {
+          log.error(colors.error(isSupportColor, err.message));
+          process.exit(1);
         }
-        throw e;
+
+        throw err;
       }
-      ['SIGINT', 'SIGTERM'].forEach(sig => {
-        process.on(sig as 'SIGINT' | 'SIGTERM', () => {
-          this.server!.close(() => {
-            process.exit();
-          });
-        });
-      });
+
+      try {
+        server = new Server(compiler, options, log);
+      } catch (err) {
+        if (err.name === 'ValidationError') {
+          log.error(colors.error(isSupportColor, err.message));
+          process.exit(1);
+        }
+
+        throw err;
+      }
+
       if (options.socket) {
-        (this.server as any).listeningApp.on('error', (e: any) => {
+        server.listeningApp.on('error', (e: any) => {
           if (e.code === 'EADDRINUSE') {
             const clientSocket = new net.Socket();
-            clientSocket.on('error', (clientError: any) => {
-              if (clientError.code === 'ECONNREFUSED') {
+
+            clientSocket.on('error', (err: any) => {
+              if (err.code === 'ECONNREFUSED') {
                 // No other server listening on this socket so it can be safely removed
                 fs.unlinkSync(options.socket);
-                this.server!.listen(options.socket as any, options.host as any, err => {
-                  if (err) {
-                    throw err;
+
+                server.listen(options.socket, options.host, (error: any) => {
+                  if (error) {
+                    throw error;
                   }
                 });
               }
             });
+
             clientSocket.connect(
               { path: options.socket },
               () => {
@@ -391,29 +256,48 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
             );
           }
         });
-        this.server.listen(options.socket as any, options.host as any, err => {
+
+        server.listen(options.socket, options.host, (err: any) => {
           if (err) {
             throw err;
           }
+
           // chmod 666 (rw rw rw)
           const READ_WRITE = 438;
-          fs.chmod(options.socket, READ_WRITE, (fsError: any) => {
-            if (fsError) {
-              throw fsError;
+
+          fs.chmod(options.socket, READ_WRITE, (err: any) => {
+            if (err) {
+              throw err;
             }
           });
         });
       } else {
-        this.server.listen(options.port as any, options.host as any, err => {
-          if (err) {
+        findPort(options.port)
+          .then((port: any) => {
+            options.port = port;
+            server.listen(options.port, options.host, (err: any) => {
+              if (err) {
+                throw err;
+              }
+            });
+          })
+          .catch((err: any) => {
             throw err;
-          }
-          if (options.bonjour) {
-            broadcastZeroconf(options);
-          }
-        });
+          });
       }
+    }
+    const devServerOption: WebpackDevServer.Configuration = {
+      port: 8080,
+      ...(this.config && (Array.isArray(this.config) ? this.config[0].devServer : this.config.devServer)),
     };
+    if (devServerOption.stats === undefined) {
+      devServerOption.stats = {
+        cached: false,
+        cachedAssets: false,
+        colors: isSupportColor,
+      } as any;
+    }
+    startDevServer(this.config || {}, devServerOption);
   }
 }
 
