@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.8.0-alpha.1"></a>
+# [0.8.0-alpha.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.8.0-alpha.0...@nowa/module-webpack@0.8.0-alpha.1) (2019-06-15)
+
+
+### Bug Fixes
+
+* this.startDevServer is not a function ([aaed3d6](https://github.com/nowa-webpack/nowa2/commit/aaed3d6))
+
+
+### Features
+
+* update peer dev-server to ^3.7.0 ([7e056af](https://github.com/nowa-webpack/nowa2/commit/7e056af))
+
+
+
+
+
 <a name="0.8.0-alpha.0"></a>
 # [0.8.0-alpha.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.6...@nowa/module-webpack@0.8.0-alpha.0) (2019-06-15)
 
