@@ -8,6 +8,7 @@
     "no-namespace": false,
     "no-shadowed-variable": false,
     "no-unused-expression": [true, "allow-fast-null-checks"],
-    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"],
+    "no-submodule-imports": false
   }
 }
