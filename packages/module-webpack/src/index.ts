@@ -14,7 +14,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   public getCompilerCallback?: (done: (error?: any) => void) => (err: any, stats: any) => void;
   public lastHash?: string;
   public server?: WebpackDevServer;
-  public startDevServer?: (done: () => void) => Promise<void>;
+  public startDevServer?: (done: () => void) => void;
   public config?: Webpack.Configuration | Webpack.Configuration[];
   public firstConfig?: Webpack.Configuration;
   public alreadyRun = false;
@@ -190,6 +190,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     // from webpack-dev-server
     // https://github.com/webpack/webpack-dev-server/blob/master/bin/webpack-dev-server.js
     // 3.7.1
+    await this._initWebpack();
     const fs = require('fs');
     const net = require('net');
     const webpack = require('webpack');
@@ -202,14 +203,25 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     let server: any;
 
     setupExitSignals(server);
+    const options: WebpackDevServer.Configuration = {
+      port: 8080,
+      ...(this.config && (Array.isArray(this.config) ? this.config[0].devServer : this.config.devServer)),
+    };
+    if (options.stats === undefined) {
+      options.stats = {
+        cached: false,
+        cachedAssets: false,
+        colors: isSupportColor,
+      } as any;
+    }
 
-    function startDevServer(config: Webpack.Configuration | Webpack.Configuration[], options: WebpackDevServer.Configuration) {
+    this.startDevServer = function startDevServer(done) {
       const log = createLogger(options);
 
       let compiler;
 
       try {
-        compiler = webpack(config);
+        compiler = webpack(this.config!);
       } catch (err) {
         if (err instanceof webpack.WebpackOptionsValidationError) {
           log.error(colors.error(isSupportColor, err.message));
@@ -218,6 +230,15 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
 
         throw err;
       }
+
+      this.compiler!.hooks.done.tapAsync('@nowa/module-webpack', (_, callback) => {
+        if (!this.alreadyOpen) {
+          // TODO: 自定义输出
+          this.alreadyOpen = true;
+        }
+        done();
+        callback();
+      });
 
       try {
         server = new Server(compiler, options, log);
@@ -285,19 +306,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
             throw err;
           });
       }
-    }
-    const devServerOption: WebpackDevServer.Configuration = {
-      port: 8080,
-      ...(this.config && (Array.isArray(this.config) ? this.config[0].devServer : this.config.devServer)),
     };
-    if (devServerOption.stats === undefined) {
-      devServerOption.stats = {
-        cached: false,
-        cachedAssets: false,
-        colors: isSupportColor,
-      } as any;
-    }
-    startDevServer(this.config || {}, devServerOption);
   }
 }
 
