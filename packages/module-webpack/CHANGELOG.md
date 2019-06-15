@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.8.0-alpha.2"></a>
+# [0.8.0-alpha.2](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.8.0-alpha.1...@nowa/module-webpack@0.8.0-alpha.2) (2019-06-15)
+
+
+### Bug Fixes
+
+* publicPath handing issue ([50d8ed3](https://github.com/nowa-webpack/nowa2/commit/50d8ed3))
+
+
+
+
+
 <a name="0.8.0-alpha.1"></a>
 # [0.8.0-alpha.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.8.0-alpha.0...@nowa/module-webpack@0.8.0-alpha.1) (2019-06-15)
 
