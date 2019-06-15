@@ -200,13 +200,9 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     const createLogger = require('webpack-dev-server/lib/utils/createLogger');
     const findPort = require('webpack-dev-server/lib/utils/findPort');
 
-    let server: any;
-
-    setupExitSignals(server);
-    const options: WebpackDevServer.Configuration = {
-      port: 8080,
-      ...(this.config && (Array.isArray(this.config) ? this.config[0].devServer : this.config.devServer)),
-    };
+    setupExitSignals(this.server);
+    const options: WebpackDevServer.Configuration =
+      (this.config && (Array.isArray(this.config) ? this.config[0].devServer : this.config.devServer)) || {};
     if (options.stats === undefined) {
       options.stats = {
         cached: false,
@@ -214,23 +210,18 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
         colors: isSupportColor,
       } as any;
     }
+    if (!options.port) {
+      options.port = 8080;
+    }
+    if (!options.publicPath) {
+      options.publicPath = (this.firstConfig && this.firstConfig.output && this.firstConfig.output.publicPath) || '';
+      if (!/^(https?:)?\/\//.test(options.publicPath) && options.publicPath[0] !== '/') {
+        options.publicPath = `/${options.publicPath}`;
+      }
+    }
 
     this.startDevServer = function startDevServer(done) {
       const log = createLogger(options);
-
-      let compiler;
-
-      try {
-        compiler = webpack(this.config!);
-      } catch (err) {
-        if (err instanceof webpack.WebpackOptionsValidationError) {
-          log.error(colors.error(isSupportColor, err.message));
-          process.exit(1);
-        }
-
-        throw err;
-      }
-
       this.compiler!.hooks.done.tapAsync('@nowa/module-webpack', (_, callback) => {
         if (!this.alreadyOpen) {
           // TODO: 自定义输出
@@ -241,7 +232,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       });
 
       try {
-        server = new Server(compiler, options, log);
+        this.server = new Server(this.compiler!, options, log);
       } catch (err) {
         if (err.name === 'ValidationError') {
           log.error(colors.error(isSupportColor, err.message));
@@ -252,7 +243,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       }
 
       if (options.socket) {
-        server.listeningApp.on('error', (e: any) => {
+        (this.server! as any).listeningApp.on('error', (e: any) => {
           if (e.code === 'EADDRINUSE') {
             const clientSocket = new net.Socket();
 
@@ -261,7 +252,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
                 // No other server listening on this socket so it can be safely removed
                 fs.unlinkSync(options.socket);
 
-                server.listen(options.socket, options.host, (error: any) => {
+                this.server!.listen(options.socket as any, options.host!, (error: any) => {
                   if (error) {
                     throw error;
                   }
@@ -278,7 +269,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           }
         });
 
-        server.listen(options.socket, options.host, (err: any) => {
+        this.server!.listen(options.socket as any, options.host!, (err: any) => {
           if (err) {
             throw err;
           }
@@ -296,7 +287,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
         findPort(options.port)
           .then((port: any) => {
             options.port = port;
-            server.listen(options.port, options.host, (err: any) => {
+            this.server!.listen(options.port!, options.host!, (err: any) => {
               if (err) {
                 throw err;
               }
