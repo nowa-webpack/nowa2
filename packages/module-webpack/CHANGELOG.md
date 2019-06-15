@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.8.0-alpha.0"></a>
+# [0.8.0-alpha.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.6...@nowa/module-webpack@0.8.0-alpha.0) (2019-06-15)
+
+
+### Features
+
+* support webpack-dev-server 3.7.0 ([13fa0c5](https://github.com/nowa-webpack/nowa2/commit/13fa0c5))
+
+
+
+
+
 <a name="0.7.6"></a>
 ## [0.7.6](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-webpack@0.7.5...@nowa/module-webpack@0.7.6) (2019-05-30)
 
