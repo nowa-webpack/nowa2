@@ -6,25 +6,13 @@
   "scripts": {
     "bootstrap": "npx lerna bootstrap",
     "build": "lerna run build",
-    "test": "lerna run test",
-    "coverage": "lerna run coverage",
     "ver": "lerna version",
     "pub": "lerna publish from-git"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^12.0.3",
-    "espower-typescript": "^9.0.2",
-    "husky": "^2.3.0",
-    "lerna": "^3.2.1",
-    "lint-staged": "^8.1.7",
-    "mocha": "^6.1.4",
-    "nyc": "^14.1.1",
-    "power-assert": "^1.6.1",
-    "prettier": "^1.17.1",
-    "ts-node": "^8.2.0",
-    "tslint": "^5.16.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.1"
+    "@types/node": "^13.1.1",
+    "lerna": "^3.20.0",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.4"
   }
 }
