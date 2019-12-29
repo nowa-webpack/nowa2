@@ -12,7 +12,7 @@ export abstract class Hookable<HookGroup extends Hookable.IHookGroup> {
   public async $applyHook<HookName extends keyof HookGroup>(hookName: HookName, param?: HookGroup[HookName][0]): Promise<void> {
     const plugins = this.$hooks[hookName as string];
     if (plugins) {
-      await Promise.all(plugins.map(handler => handler.call(null, param)));
+      await Promise.all(plugins.map(handler => handler.call(this, param)));
     }
     return;
   }
@@ -26,7 +26,7 @@ export abstract class Hookable<HookGroup extends Hookable.IHookGroup> {
       this.$hooks[hookName as string] && (FIFO ? this.$hooks[hookName as string] : Array.from(this.$hooks[hookName as string]!).reverse());
     if (plugins) {
       for (const handler of plugins!) {
-        const result = await handler.call(null, param);
+        const result = await handler.call(this, param);
         if (result !== undefined) {
           return result;
         }
@@ -45,7 +45,7 @@ export abstract class Hookable<HookGroup extends Hookable.IHookGroup> {
     let prevResult = initial;
     if (plugins) {
       for (const func of plugins!) {
-        const result = await func.call(null, prevResult);
+        const result = await func.call(this, prevResult);
         if (result !== undefined) {
           prevResult = result;
         }
