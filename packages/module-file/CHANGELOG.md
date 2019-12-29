@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-file@0.3.0...@nowa/module-file@0.3.1) (2019-12-29)
+
+
+### Bug Fixes
+
+* path issues when copying directories  (temporary fix) ([44bc68f](https://github.com/nowa-webpack/nowa2/commit/44bc68f937a0e0387715af4d087e1bc166adb458))
+
+
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/nowa-webpack/nowa2/compare/@nowa/module-file@0.2.2...@nowa/module-file@0.3.0) (2018-07-18)
 

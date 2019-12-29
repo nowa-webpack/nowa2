@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.6](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.5...@nowa/core@0.7.6) (2019-12-29)
+
+
+### Bug Fixes
+
+* **core:** hookable handler this is null ([3c95d95](https://github.com/nowa-webpack/nowa2/commit/3c95d95b147439fb82bfd962746dacaf7cea64cc))
+
+
+
+
+
 <a name="0.7.5"></a>
 ## [0.7.5](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.4...@nowa/core@0.7.5) (2018-11-13)
 
