@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.7](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.6...@nowa/core@0.7.7) (2019-12-29)
+
+
+### Bug Fixes
+
+* **core:** if (void) ([d3e3330](https://github.com/nowa-webpack/nowa2/commit/d3e333064a9d8b40372c5aaef5ca7976e89a8c26))
+
+
+
+
+
 ## [0.7.6](https://github.com/nowa-webpack/nowa2/compare/@nowa/core@0.7.5...@nowa/core@0.7.6) (2019-12-29)
 
 
