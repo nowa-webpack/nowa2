@@ -27,16 +27,15 @@
   "devDependencies": {
     "@nowa/core": "^0.7.5",
     "@types/node": "^10.9.4",
-    "@types/supports-color": "^5.3.0",
-    "@types/webpack": "^4.4.32",
-    "@types/webpack-dev-server": "^3.1.6",
+    "@types/webpack": "^4.41.0",
+    "@types/webpack-dev-server": "^3.9.0",
     "webpack": "^4.34.0",
-    "webpack-dev-server": "^3.7.0"
+    "webpack-dev-server": "^3.10.0"
   },
   "peerDependencies": {
     "@nowa/core": "^0.7.1",
-    "webpack": "^3.0.0 || ^4.0.0",
-    "webpack-dev-server": "^3.7.0"
+    "webpack": "^4.0.0",
+    "webpack-dev-server": "^3.10.0"
   },
   "types": "./",
   "publishConfig": {

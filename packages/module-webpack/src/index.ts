@@ -1,11 +1,7 @@
 import { Module, utils } from '@nowa/core';
 import { resolve } from 'path';
-import * as supportsColor from 'supports-color';
 import * as Webpack from 'webpack';
 import * as WebpackDevServer from 'webpack-dev-server';
-import * as Stats from 'webpack/lib/Stats'; // tslint:disable-line:no-submodule-imports
-
-const isSupportColor = supportsColor.stdout;
 
 export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config> {
   public $name = 'webpack';
@@ -16,7 +12,6 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   public server?: WebpackDevServer;
   public startDevServer?: (done: () => void) => void;
   public config?: Webpack.Configuration | Webpack.Configuration[];
-  public firstConfig?: Webpack.Configuration;
   public alreadyRun = false;
   public alreadyOpen = false;
 
@@ -33,7 +28,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     const overwriteConfigPath = resolve(this.$runtime.context, './webpack.overwrite.js');
     let overwriteConfig = await utils.requireFile(overwriteConfigPath);
     if (overwriteConfig && typeof overwriteConfig === 'object') {
-      logger.debug(`find overwrite config is a object, send to parser`);
+      logger.debug(`find overwrite config is a object, send it to parser`);
       const parserResult = utils.parser('webpack.config', this.$runtime.commands, logger.debug, overwriteConfig); // tslint:disable-line:no-empty
       overwriteConfig = (parserResult && parserResult.result && parserResult.result[0]) || overwriteConfig;
       if (typeof overwriteConfig === 'function') {
@@ -47,14 +42,13 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     logger.debug(`got ${finalConfigs.length} webpack configs`);
     logger.debug(finalConfigs);
     this.config = finalConfigs.length === 1 ? finalConfigs[0] : finalConfigs;
-    this.firstConfig = finalConfigs[0];
-    logger.debug(`use configs[0] as firstConfig`, this.firstConfig);
+    const firstConfig = finalConfigs[0];
 
     const autoMode = async () => {
-      if (this.firstConfig!.devServer) {
+      if (firstConfig.devServer) {
         this.mode = 'devServer';
         return this._initWebpackDevServer();
-      } else if (this.firstConfig!.watch) {
+      } else if (firstConfig.watch) {
         this.mode = 'watch';
       } else {
         this.mode = 'run';
@@ -85,18 +79,31 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     if (!this.alreadyRun) {
       if (this.mode === 'devServer') {
         this.startDevServer!(done);
-      } else if (this.mode === 'watch') {
-        const watchOptions = this.firstConfig!.watchOptions || this.firstConfig!.watch || {};
-        if ((watchOptions as any).stdin) {
-          process.stdin.on('end', () => {
-            process.exit();
+      }
+      if (this.mode === 'watch') {
+        const options = this.config!;
+        const firstOptions: Webpack.Configuration = ([] as Webpack.Configuration[]).concat(options)[0];
+        const watchOptions =
+          firstOptions.watchOptions || (options as any).watchOptions || firstOptions.watch || (options as any).watch || {};
+        if (watchOptions.stdin) {
+          process.stdin.on('end', function(_) {
+            process.exit(); // eslint-disable-line
           });
           process.stdin.resume();
         }
-        this.compiler!.watch(watchOptions as any, this.getCompilerCallback!(done));
+        this.compiler!.watch(watchOptions, this.getCompilerCallback!(done));
       } else {
-        this.compiler!.run(this.getCompilerCallback!(done));
+        this.compiler!.run((err, stats) => {
+          if ((this.compiler as any).close) {
+            (this.compiler as any).close((err2: any) => {
+              this.getCompilerCallback!(done)(err || err2, stats);
+            });
+          } else {
+            this.getCompilerCallback!(done)(err, stats);
+          }
+        });
       }
+
       this.alreadyRun = true;
     }
   }
@@ -111,139 +118,156 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
   }
 
   private async _initWebpack(): Promise<void> {
-    // from webpack
+    // from webpack-cli
     // https://github.com/webpack/webpack/blob/master/bin/webpack.js
-    // 3.10.0
+    // 3.3.10
+
+    require('v8-compile-cache');
     const options = this.config!;
-    const firstOptions: any = [].concat(options as any)[0];
-    const statsPresetToOptions = Stats.presetToOptions;
-    let outputOptions: any = (options as any).stats;
+
+    const firstOptions: Webpack.Configuration = ([] as Webpack.Configuration[]).concat(options)[0];
+    const statsPresetToOptions = require('webpack').Stats.presetToOptions;
+
+    let outputOptions = (options as any).stats;
     if (typeof outputOptions === 'boolean' || typeof outputOptions === 'string') {
       outputOptions = statsPresetToOptions(outputOptions);
     } else if (!outputOptions) {
       outputOptions = {};
     }
+
     outputOptions = Object.create(outputOptions);
     if (Array.isArray(options) && !outputOptions.children) {
       outputOptions.children = options.map(o => o.stats);
     }
-    if (typeof outputOptions.context === 'undefined') {
-      outputOptions.context = firstOptions.context;
-    }
-    if (typeof outputOptions.colors === 'undefined') {
-      outputOptions.colors = true;
-    }
+    if (typeof outputOptions.context === 'undefined') outputOptions.context = firstOptions.context;
+
+    if (typeof outputOptions.colors === 'undefined') outputOptions.colors = require('supports-color').stdout;
+
     if (!outputOptions.json) {
-      if (typeof outputOptions.cached === 'undefined') {
-        outputOptions.cached = false;
-      }
-      if (typeof outputOptions.cachedAssets === 'undefined') {
-        outputOptions.cachedAssets = false;
-      }
-      if (!outputOptions.exclude) {
-        outputOptions.exclude = ['node_modules', 'bower_components', 'components'];
-      }
+      if (typeof outputOptions.cached === 'undefined') outputOptions.cached = false;
+      if (typeof outputOptions.cachedAssets === 'undefined') outputOptions.cachedAssets = false;
+
+      if (!outputOptions.exclude) outputOptions.exclude = ['node_modules', 'bower_components', 'components'];
     }
-    Error.stackTraceLimit = 30;
+
+    const webpack = require('webpack');
+
+    let lastHash: string | null = null;
+
     try {
-      this.compiler = Webpack(options as Webpack.Configuration);
+      this.compiler = webpack(options);
     } catch (err) {
       if (err.name === 'WebpackOptionsValidationError') {
-        if (isSupportColor) {
-          console.error(`\u001b[1m\u001b[31m${err.message}\u001b[39m\u001b[22m`);
-        } else {
-          console.error(err.message);
-        }
-      }
-      throw err;
-    }
-    this.getCompilerCallback = done => (err: any, stats: any) => {
-      if (!firstOptions.watch || err) {
-        // Do not keep cache anymore
-        (this.compiler as any).purgeInputFileSystem();
-      }
-      if (err) {
-        this.lastHash = undefined;
-        console.error(err.stack || err);
-        if (err.details) {
-          console.error(err.details);
-        }
+        if (outputOptions.colors) console.error(`\u001b[1m\u001b[31m${err.message}\u001b[39m\u001b[22m`);
+        else console.error(err.message);
+        // eslint-disable-next-line no-process-exit
         process.exit(1);
       }
-      if (outputOptions.json) {
-        process.stdout.write(JSON.stringify(stats.toJson(outputOptions), null, 2) + '\n');
-      } else if (stats.hash !== this.lastHash) {
-        this.lastHash = stats.hash;
-        const statsString = stats.toString(outputOptions);
-        if (statsString) {
-          process.stdout.write(statsString + '\n');
+
+      throw err;
+    }
+    this.getCompilerCallback = done => {
+      return (err, stats) => {
+        if (this.mode !== 'watch' || err) {
+          // Do not keep cache anymore
+          (this.compiler! as any).purgeInputFileSystem();
         }
-        done(); // only continue moduleQueue when hash changed
-      }
-      if (!firstOptions.watch && stats.hasErrors()) {
-        process.exitCode = 2;
-      }
+        if (err) {
+          lastHash = null;
+          console.error(err.stack || err);
+          if (err.details) console.error(err.details);
+          process.exitCode = 1;
+          return;
+        } else if (stats.hash && stats.hash !== lastHash) {
+          done();
+        }
+        if (outputOptions.json) {
+          process.stdout.write(JSON.stringify(stats.toJson(outputOptions), null, 2) + '\n');
+        } else if (stats.hash !== lastHash) {
+          lastHash = stats.hash;
+          if (stats.compilation && stats.compilation.errors.length !== 0) {
+            const errors = stats.compilation.errors;
+            if (errors[0].name === 'EntryModuleNotFoundError') {
+              console.error('\n\u001b[1m\u001b[31mInsufficient number of arguments or no entry found.');
+            }
+          }
+          const statsString = stats.toString(outputOptions);
+          const delimiter = outputOptions.buildDelimiter ? `${outputOptions.buildDelimiter}\n` : '';
+          if (statsString) process.stdout.write(`${statsString}\n${delimiter}`);
+        }
+        if (this.mode !== 'watch' && stats.hasErrors()) {
+          process.exitCode = 2;
+        }
+      };
     };
   }
 
   private async _initWebpackDevServer(): Promise<void> {
     // from webpack-dev-server
     // https://github.com/webpack/webpack-dev-server/blob/master/bin/webpack-dev-server.js
-    // 3.7.1
-    await this._initWebpack();
+    // 3.10.0
     const fs = require('fs');
     const net = require('net');
     const webpack = require('webpack');
-    const Server = require('webpack-dev-server');
+    const Server = require('webpack-dev-server/lib/Server');
     const setupExitSignals = require('webpack-dev-server/lib/utils/setupExitSignals');
     const colors = require('webpack-dev-server/lib/utils/colors');
+    const processOptions = require('webpack-dev-server/lib/utils/processOptions');
     const createLogger = require('webpack-dev-server/lib/utils/createLogger');
-    const findPort = require('webpack-dev-server/lib/utils/findPort');
+    await this._initWebpack();
+    const serverData = {
+      server: null,
+    };
 
-    setupExitSignals(this.server);
-    const options: WebpackDevServer.Configuration =
-      (this.config && (Array.isArray(this.config) ? this.config[0].devServer : this.config.devServer)) || {};
-    if (options.stats === undefined) {
-      options.stats = {
-        cached: false,
-        cachedAssets: false,
-        colors: isSupportColor,
-      } as any;
-    }
-    if (!options.port) {
-      options.port = 8080;
-    }
-    if (!options.publicPath) {
-      options.publicPath = (this.firstConfig && this.firstConfig.output && this.firstConfig.output.publicPath) || '';
-      if (!/^(https?:)?\/\//.test(options.publicPath) && options.publicPath[0] !== '/') {
-        options.publicPath = `/${options.publicPath}`;
+    setupExitSignals(serverData);
+    const setOutputFilename = (c: Webpack.Configuration) => {
+      if (!c.output) {
+        c.output = { filename: '/bundle.js' };
+      } else {
+        c.output.filename = '/bundle.js';
       }
+    };
+    if (Array.isArray(this.config)) {
+      this.config.forEach(setOutputFilename);
+    } else {
+      setOutputFilename(this.config!);
     }
+    const config = this.config!;
 
-    this.startDevServer = function startDevServer(done) {
+    const startDevServer = (config: any, options: any) => {
       const log = createLogger(options);
-      this.compiler!.hooks.done.tapAsync('@nowa/module-webpack', (_, callback) => {
-        if (!this.alreadyOpen) {
-          // TODO: 自定义输出
-          this.alreadyOpen = true;
-        }
-        done();
-        callback();
-      });
+
+      let compiler;
 
       try {
-        this.server = new Server(this.compiler!, options, log);
+        compiler = webpack(config);
       } catch (err) {
-        if (err.name === 'ValidationError') {
-          log.error(colors.error(isSupportColor, err.message));
+        if (err instanceof webpack.WebpackOptionsValidationError) {
+          log.error(colors.error(options.stats.colors, err.message));
+          // eslint-disable-next-line no-process-exit
           process.exit(1);
         }
 
         throw err;
       }
 
+      try {
+        this.server = new Server(compiler, options, log);
+        serverData.server = this.server as any;
+      } catch (err) {
+        if (err.name === 'ValidationError') {
+          log.error(colors.error(options.stats.colors, err.message));
+          // eslint-disable-next-line no-process-exit
+          process.exit(1);
+        }
+
+        throw err;
+      }
+
+      const server = this.server as any;
+
       if (options.socket) {
-        (this.server! as any).listeningApp.on('error', (e: any) => {
+        server.listeningApp.on('error', (e: any) => {
           if (e.code === 'EADDRINUSE') {
             const clientSocket = new net.Socket();
 
@@ -252,7 +276,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
                 // No other server listening on this socket so it can be safely removed
                 fs.unlinkSync(options.socket);
 
-                this.server!.listen(options.socket as any, options.host!, (error: any) => {
+                server.listen(options.socket, options.host, (error: any) => {
                   if (error) {
                     throw error;
                   }
@@ -269,7 +293,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           }
         });
 
-        this.server!.listen(options.socket as any, options.host!, (err: any) => {
+        server.listen(options.socket, options.host, (err: any) => {
           if (err) {
             throw err;
           }
@@ -284,20 +308,26 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
           });
         });
       } else {
-        findPort(options.port)
-          .then((port: any) => {
-            options.port = port;
-            this.server!.listen(options.port!, options.host!, (err: any) => {
-              if (err) {
-                throw err;
-              }
-            });
-          })
-          .catch((err: any) => {
+        server.listen(options.port, options.host, (err: any) => {
+          if (err) {
             throw err;
-          });
+          }
+        });
       }
     };
+    return new Promise((resolve, reject) => {
+      try {
+        processOptions(config, {}, (config: any, options: any) => {
+          this.startDevServer = function _startDevServer(done) {
+            // TODO: DONE ?
+            startDevServer(config, options);
+          };
+          resolve();
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }
 
