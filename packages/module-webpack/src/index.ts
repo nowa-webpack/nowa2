@@ -86,7 +86,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
         const watchOptions =
           firstOptions.watchOptions || (options as any).watchOptions || firstOptions.watch || (options as any).watch || {};
         if (watchOptions.stdin) {
-          process.stdin.on('end', function(_) {
+          process.stdin.on('end', function(_: any) {
             process.exit(); // eslint-disable-line
           });
           process.stdin.resume();
@@ -220,21 +220,9 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
     };
 
     setupExitSignals(serverData);
-    const setOutputFilename = (c: Webpack.Configuration) => {
-      if (!c.output) {
-        c.output = { filename: '/bundle.js' };
-      } else {
-        c.output.filename = '/bundle.js';
-      }
-    };
-    if (Array.isArray(this.config)) {
-      this.config.forEach(setOutputFilename);
-    } else {
-      setOutputFilename(this.config!);
-    }
     const config = this.config!;
 
-    const startDevServer = (config: any, options: any) => {
+    const startDevServer = (config: any, options: any, done: () => void) => {
       const log = createLogger(options);
 
       let compiler;
@@ -265,7 +253,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       }
 
       const server = this.server as any;
-
+      done();
       if (options.socket) {
         server.listeningApp.on('error', (e: any) => {
           if (e.code === 'EADDRINUSE') {
@@ -284,12 +272,9 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
               }
             });
 
-            clientSocket.connect(
-              { path: options.socket },
-              () => {
-                throw new Error('This socket is already used');
-              },
-            );
+            clientSocket.connect({ path: options.socket }, () => {
+              throw new Error('This socket is already used');
+            });
           }
         });
 
@@ -319,8 +304,7 @@ export default class ModuleWebpack extends Module.Callback<ModuleWebpack.Config>
       try {
         processOptions(config, {}, (config: any, options: any) => {
           this.startDevServer = function _startDevServer(done) {
-            // TODO: DONE ?
-            startDevServer(config, options);
+            startDevServer(config, options, done);
           };
           resolve();
         });
@@ -336,9 +320,13 @@ export namespace ModuleWebpack {
     mode?: 'run' | 'watch' | 'devServer';
   }
   export type ConfigFileContent =
-    | ((
-        { context, options }: { context: string; options: object },
-      ) => Webpack.Configuration | Webpack.Configuration[] | Promise<Webpack.Configuration | Webpack.Configuration[]>)
+    | (({
+        context,
+        options,
+      }: {
+        context: string;
+        options: object;
+      }) => Webpack.Configuration | Webpack.Configuration[] | Promise<Webpack.Configuration | Webpack.Configuration[]>)
     | Webpack.Configuration
     | Webpack.Configuration[];
   export type SingleConfig = /* path to configFile */ string | ConfigFileContent;
