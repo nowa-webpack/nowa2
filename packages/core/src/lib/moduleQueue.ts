@@ -65,9 +65,7 @@ export class ModuleQueue extends Runnable.Callback<ModuleQueue.IPluginGroup> {
       try {
         await module.run();
       } catch (error) {
-        if (await this._handleRunError(error)) {
-          throw error;
-        }
+        await this._handleRunError(error);
       }
     } else {
       await new Promise(resolve => {
