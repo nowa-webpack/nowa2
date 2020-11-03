@@ -33,7 +33,7 @@
     "semver": "^5.5.0",
     "tslib": "^1.9.1",
     "yargs": "^11.0.0",
-    "yargs-parser": "^10.0.0"
+    "yargs-parser": "^13.1.2"
   },
   "devDependencies": {
     "@nowa/core": "^0.7.7",
